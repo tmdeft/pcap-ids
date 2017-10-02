@@ -18,7 +18,7 @@ Ids::Ids(){
 }
 
 void sql_connection(){
-
+	
 }
 
 void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *buffer){
