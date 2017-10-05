@@ -14,12 +14,14 @@
 #include <netinet/udp.h>   //Provides declarations for udp header
 #include <netinet/tcp.h>   //Provides declarations for tcp header
 #include <netinet/ip.h>    //Provides declarations for ip header
-#include "mysql_connection.h"
+#include <mysql_connection.h>
+#include <mysql_driver.h>
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
+#include <mysql/mysql.h>
 
 class Ids{
 	public:

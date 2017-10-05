@@ -1,13 +1,15 @@
 #include "ids.h"
 
-int total, icmp, igmp, tcp, udp, others = 0;
-
 using namespace std;
+using namespace sql::mysql;
 
 #define DBHOST "localhost"
-#define DBUSER "ids_user"
+#define DBUSER "ids"
 #define DBPASS "QWEasd"
-#define DBBASE "ids"
+#define DBBASE "IDS"
+
+int total, icmp, igmp, tcp, udp, others = 0;
+bool dbCon = false;
 
 sql::Driver *driver;
 sql::Connection *con;
@@ -17,11 +19,35 @@ sql::ResultSet *res;
 Ids::Ids(){
 }
 
-void sql_connection(){
-	
+void Ids::sql_connection(void){
+	cout << "Entering SQL connection..." << endl;
+	try {
+		driver = get_mysql_driver_instance();
+		con = driver->connect(DBHOST, DBUSER, DBPASS);
+		con->setSchema(DBBASE);
+		if (!con->isValid()) {
+			cout << "Connection failed" << endl;
+			exit(1);
+		}
+		else {
+			cout << "MySQL Connection success" << endl;
+			dbCon = true;
+		}
+	} catch (sql::SQLException &e){
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
+		cout << "# ERR: " << e.what();
+		cout << "(MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << ")" << endl;
+	}
 }
 
 void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *buffer){
+	Ids ids;
+	if (dbCon != true){
+		ids.sql_connection();
+	}
+
 	int size = header->len;
     //Getting IP Header
     struct iphdr *iph = (struct iphdr*)(buffer + sizeof(struct ethhdr));
