@@ -20,7 +20,7 @@ Ids::Ids(){
 }
 
 void Ids::sql_connection(void){
-	cout << "Entering SQL connection..." << endl;
+	cout << "Connecting to MySQL database..." << endl;
 	try {
 		driver = get_mysql_driver_instance();
 		con = driver->connect(DBHOST, DBUSER, DBPASS);
@@ -81,6 +81,4 @@ void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u
 }
 
 Ids::~Ids(){
-	cout << "Bye!" << endl;
-	exit(2);
 }
