@@ -20,7 +20,7 @@ class Ids{
 		Ids();
 		~Ids();
 		static void process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *buffer);
-		bool sql_connection();
+		void sql_connection();
 		void add_db(int tcp, int udp, int others, int total, int icmp, int igmp);
 		
 };

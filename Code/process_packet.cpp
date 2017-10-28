@@ -2,6 +2,7 @@
 
 using namespace std;
 
+bool sqlState = false;
 int total, icmp, igmp, tcp, udp, others = 0;
 
 Ids::Ids(){
@@ -10,8 +11,9 @@ Ids::Ids(){
 void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *buffer){
 	Ids ids;
 
-	if (ids.sql_connection() == false){
-		cout << "Sql connection failed...";
+	if (sqlState == false){
+		ids.sql_connection();
+		sqlState = true;
 	}
 
 	int size = header->len;
