@@ -46,7 +46,7 @@ void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u
             break;
     }
     cout << "TCP: " << tcp << " UDP: " << udp << " ICMP: " << icmp << " IGMP: " << igmp << " Others: " << others << " Total: " << total << "\r";
-    ids.add_db(total, tcp, udp, others, icmp, igmp);
+    ids.add_db(tcp, udp, others, total, icmp, igmp);
 }
 
 Ids::~Ids(){

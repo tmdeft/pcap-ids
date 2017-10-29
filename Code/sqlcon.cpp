@@ -29,10 +29,11 @@ void Ids::sql_connection(){
 		driver = ::get_driver_instance();
 		con = driver->connect(DBHOST, DBUSER, DBPASS);
 		con->setSchema("IDS");
-		stmt = con->createStatement();
+		/*stmt = con->createStatement();
 		stmt->execute("INSERT INTO summaryTable(TCP,UDP,Others,Total,ICMP,IGMP) VALUES(0,0,0,0,0,0)");
+		*/
 		sessionId ++;
-		delete stmt;
+		//delete stmt;
 		if (!con->isValid()){
 			cout << "MySQL Connection failed" << endl;
 			exit(1);
