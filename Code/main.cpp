@@ -50,7 +50,7 @@ int main(int argc, char *argv[]){
 		cout << "Error: " << errbuf << endl;
 		exit(2);
 	}
-
+	
 	//Looping pcap
 	pcap_loop(handle, -1, Ids::process_packet, NULL);
 

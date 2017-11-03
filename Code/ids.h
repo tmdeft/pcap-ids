@@ -17,12 +17,13 @@
 
 class Ids{
 	public:
+		unsigned int tcp, udp, others, total, icmp, igmp = 0;
 		Ids();
 		~Ids();
 		static void process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *buffer);
 		void sql_connection();
 		void add_db(int tcp, int udp, int others, int total, int icmp, int igmp);
-		
+
 };
 
 #endif
