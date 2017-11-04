@@ -1,16 +1,17 @@
 #include "ids.h"
+#include <ctime>
+#include <iostream>
 
 using namespace std;
 
 bool sqlState = false;
+unsigned int tmpTcp, tmpUdp, tmpIcmp, tmpOthers, tmpIgmp, tmpTotal = 0;
 
 Ids::Ids(){
 }
 
 void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *buffer){
 	Ids ids;
-
-	cout << ids.icmp << ids.total << ids.igmp << ids.tcp << ids.udp ;
 
 	if (sqlState == false){
 		ids.sql_connection();
@@ -20,34 +21,51 @@ void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u
 	int size = header->len;
     //Getting IP Header
     struct iphdr *iph = (struct iphdr*)(buffer + sizeof(struct ethhdr));
-    ids.total ++;
+    tmpTotal ++;
     switch (iph->protocol) //Sorting the packets by protocol
     {
         case 1:  //ICMP Protocol
-        	ids.icmp ++;
+						tmpIcmp ++;
             //print_icmp_packet( buffer , size);
             break;
-         
+
         case 2:  //IGMP Protocol
-            ids.igmp ++;
+            tmpIgmp ++;
             break;
-         
+
         case 6:  //TCP Protocol
-            ids.tcp ++;
+            tmpTcp ++;
             //print_tcp_packet(buffer , size);
             break;
-         
+
         case 17: //UDP Protocol
-            ids.udp ++;
+            tmpUdp ++;
             //print_udp_packet(buffer , size);
             break;
-         
+
         default: //Some Other Protocol like ARP etc.
-            ids.others ++;
+            tmpOthers ++;
             break;
     }
-    cout << "TCP: " << ids.tcp << " UDP: " << ids.udp << " ICMP: " << ids.icmp << " IGMP: " << ids.igmp << " Others: " << ids.others << " Total: " << ids.total << "\r";
-    ids.add_db(ids.tcp, ids.udp, ids.others, ids.total, ids.icmp, ids.igmp);
+    cout << "TCP: " << tmpTcp << " UDP: " << tmpUdp << " ICMP: " << tmpIcmp << " IGMP: " << tmpIgmp << " Others: " << tmpOthers << " Total: " << tmpTotal << "\r";
+    ids.add_db(tmpTcp, tmpUdp, tmpOthers, tmpTotal, tmpIcmp, tmpIgmp);
+}
+
+char Ids::getRes(){
+		string data = "";
+		data += "{'TCP':'";
+		data += tmpTcp;
+		data += "','UDP':'";
+		data += tmpUdp;
+		data += "','ICMP':'";
+		data += tmpIcmp;
+		data += "','IGMP':'";
+		data += tmpIgmp;
+		data += "','Others':'";
+		data += tmpOthers;
+		data += "','Total':'";
+		data += tmpTotal;
+		data += "'}";
 }
 
 Ids::~Ids(){

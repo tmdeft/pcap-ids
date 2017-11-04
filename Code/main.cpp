@@ -4,8 +4,8 @@
  *	MUST-SICT-Network&Security Department
  *	J.IN12D067 G.Bayarkhuu
  *****************************************
- 
- * 
+
+ *
  	This tool is for network security developers.
  	Main purpose of the tool is detecting Denial of Service attack.
  	This tool detects DoS TCP SynFlood attacks by examining packets passed by the machines interface or directed to the machine.
@@ -27,8 +27,24 @@
 
 #include "ids.h"
 #include <pcap.h>
+#include <pthread.h>
 
 using namespace std;
+
+void *Prep(void *arg){
+		char *dev;
+		dev = (char*)arg;
+		cout << "Passed argument : " << dev << endl;
+		char errbuf[PCAP_ERRBUF_SIZE];
+		pcap_t *handle;
+		handle = pcap_open_live(dev, BUFSIZ, 1, 1000, errbuf);
+		if (handle == NULL){
+			cout << "Can't open interface : " << dev << " for sniffing" << endl;
+			cout << "Error : " << errbuf << endl;
+			exit(1);
+		}
+		pcap_loop(handle, -1, Ids::process_packet, NULL);
+}
 
 int main(int argc, char *argv[]){
 	if (argc < 2){
@@ -39,20 +55,16 @@ int main(int argc, char *argv[]){
 		cout << "Wrong Usage\nUsage: interface" << endl;
 		exit(2);
 	}
-	char *dev = argv[1], errbuf[PCAP_ERRBUF_SIZE];
-	cout << "Chosen interface: " << dev << endl;
-
-	//Creating session handler...
-	pcap_t *handle;
-	handle = pcap_open_live(dev, BUFSIZ, 1, 1000, errbuf);
-	if (handle == NULL){
-		cout << "Can't open interface: " << dev << " for sniffing." << endl;
-		cout << "Error: " << errbuf << endl;
-		exit(2);
+	//Creating thread...
+	pthread_t loopThread;
+	int prep;
+	const char *dev = argv[1];
+	prep = pthread_create(&loopThread, NULL, Prep, (void*)dev);
+	if (prep){
+		cout << "Error unable to create thread : " << prep << endl;
+		exit(1);
 	}
+	pthread_join(loopThread, NULL);
 	
-	//Looping pcap
-	pcap_loop(handle, -1, Ids::process_packet, NULL);
-
 	return 0;
 }
