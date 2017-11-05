@@ -16,12 +16,11 @@ void error(const char *msg){
 	exit(1);
 }
 
-int main(int argc, char *argv[]){
+void main(int argc, char *argv[]){
     Ids ids;
 		int sockfd, newsockfd, portno;
-    string data = "{'TCP':'";
-    data += to_string(ids.tcp);
-    data += "'}";
+    string data = "";
+		data = ids.getRes();
     int len = data.length();
     socklen_t clilen;
     char buffer[256];

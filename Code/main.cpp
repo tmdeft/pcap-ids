@@ -65,6 +65,6 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 	pthread_join(loopThread, NULL);
-	
+
 	return 0;
 }

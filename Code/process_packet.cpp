@@ -51,21 +51,22 @@ void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u
     ids.add_db(tmpTcp, tmpUdp, tmpOthers, tmpTotal, tmpIcmp, tmpIgmp);
 }
 
-char Ids::getRes(){
+std::string Ids::getRes(){
 		string data = "";
 		data += "{'TCP':'";
-		data += tmpTcp;
+		data += to_string(tmpTcp);
 		data += "','UDP':'";
-		data += tmpUdp;
+		data += to_string(tmpUdp);
 		data += "','ICMP':'";
-		data += tmpIcmp;
+		data += to_string(tmpIcmp);
 		data += "','IGMP':'";
-		data += tmpIgmp;
+		data += to_string(tmpIgmp);
 		data += "','Others':'";
-		data += tmpOthers;
+		data += to_string(tmpOthers);
 		data += "','Total':'";
-		data += tmpTotal;
+		data += to_string(tmpTotal);
 		data += "'}";
+		return data;
 }
 
 Ids::~Ids(){
