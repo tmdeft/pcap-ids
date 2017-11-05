@@ -8,12 +8,15 @@ void *mainProcess(void *arg){
     device = (char *)arg;
     Ids ids;
     ids.setup(device);
-    ids.process_packet();
 }
 
 void *sqlProcess(void *){
     Sql sql;
-    sql.connect();
+    bool state;
+    state = sql.connect();
+    if (state == false){
+      sql.connect();
+    }
     sql.insertData();
     sql.addData();
     sql.selectData();
@@ -22,9 +25,11 @@ void *sqlProcess(void *){
 void *socketProcess(void *){
     Socket socket;
     socket.getData();
+    socket.startSock();
 }
 
 int main(int argc, char *argv[]){
+    //checking arguments
     if (argc < 2){
       cout << "Missing argument" << endl;
       cout << "Usage : interface" << endl;
@@ -35,6 +40,7 @@ int main(int argc, char *argv[]){
       cout << "This might cause program fail. Exiting..." << endl;
       exit(1);
     }
+    //Creating threads
     pthread_t loopThread, sqlThread, sockThread;
     const char *dev = argv[1];
     int loop, sql, sock;

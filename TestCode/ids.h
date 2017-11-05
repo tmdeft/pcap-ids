@@ -8,6 +8,8 @@
 #include <stdlib.h> // for exit()
 #include <string.h> //for memset
 #include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <arpa/inet.h> // for inet_ntoa()
 #include <net/ethernet.h>
 #include <netinet/ip_icmp.h>   //Provides declarations for icmp header
@@ -19,7 +21,7 @@ class Sql {
   public:
     Sql();
     ~Sql();
-    void connect();
+    bool connect();
     void insertData();
     void addData();
     void selectData();
@@ -35,19 +37,22 @@ class Ids{
     Ids();
     ~Ids();
     void setup(char *);
-    void process_packet();
+    std::string setProtocol();
+    void initData();
+    static void process_packet(u_char *, const struct pcap_pkthdr *, const u_char *);
     void ext_Tcp();
     void ext_Udp();
     void writeData();
-    unsigned int tcp, udp, icmp, others, total, igmp;
+    //unsigned int tcp, udp, icmp, others, total, igmp;
 };
 
 class Socket{
   public:
     Socket();
     ~Socket();
-    void getData();
+    std::string getData();
     void sendData();
+    void startSock();
   private:
     Ids ids;
 };
