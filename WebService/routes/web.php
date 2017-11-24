@@ -17,3 +17,12 @@
 Route::get('/', function(){
     return view('dashboard');
 });
+Route::get('/dashboard', function(){
+    return view('dashboard');
+});
+Route::get('/app',function(){
+    return view('application');
+});
+Route::get('/doslog',function(){
+    return view('doslog');
+});

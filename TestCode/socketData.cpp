@@ -40,16 +40,18 @@ void Socket::startSock(){
         error("ERROR on binding");
     listen(sockfd,5);
     clilen = sizeof(cli_addr);
-    newsockfd = accept(sockfd,
-        (struct sockaddr *) &cli_addr,
-        &clilen);
-    if (newsockfd < 0)
-        error("ERROR on accept");
-    bzero(buffer,256);
-    n = read(newsockfd,buffer,255);
-    if (n < 0) error("ERROR reading from socket");
-    printf("Here is the message: %s\n",buffer);
-    string data = getData();
-    n = write(newsockfd,data.data(),data.size());
-    if (n < 0) error("ERROR writing to socket");
+		while(1){
+			newsockfd = accept(sockfd,
+	        (struct sockaddr *) &cli_addr,
+	        &clilen);
+	    if (newsockfd < 0)
+	        error("ERROR on accept");
+	    bzero(buffer,256);
+	    n = read(newsockfd,buffer,255);
+	    if (n < 0) error("ERROR reading from socket");
+	    //printf("Here is the message: %s\n",buffer);
+	    string data = getData();
+	    n = write(newsockfd,data.data(),data.size());
+	    if (n < 0) error("ERROR writing to socket");
+		}
 }

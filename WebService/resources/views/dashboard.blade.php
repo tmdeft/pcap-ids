@@ -1,5 +1,14 @@
 @extends('master')
 @section('title', 'dashboard')
+@section('navigation')
+  <li class="active"><a href="/dashboard">Dashboard</a></li>
+  <li><a href="/app">Application Layers</a></li>
+  <li><a href="/doslog">DoS Log</a></li>
+@endsection
+@section('scripts')
+  <script src="/js/flot-real.js"></script>
+  <script src="/js/flot-time.js"></script>
+@endsection
 @section('content')
 <div class="row">
               <div class="col-lg-3 col-md-6">
