@@ -3,6 +3,7 @@
 using namespace std;
 
 Socket::Socket(){
+	Ids ids;
     //cout << "Entering socket program" << endl;
 }
 
@@ -16,7 +17,7 @@ void error(const char *msg){
 }
 
 std::string Socket::getData(){
-    Ids ids;
+    //Ids ids;
     string res;
     res = ids.setProtocol();
     return res;
@@ -26,7 +27,7 @@ std::string Socket::getData(){
 void Socket::startSock(){
     int sockfd, newsockfd, portno;
     socklen_t clilen;
-    char buffer[256];
+    char buffer[1024];
     struct sockaddr_in serv_addr, cli_addr;
     int n;
     sockfd = socket(AF_INET, SOCK_STREAM, 0);

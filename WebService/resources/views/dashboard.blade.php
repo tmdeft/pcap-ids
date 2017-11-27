@@ -6,8 +6,10 @@
   <li><a href="/doslog">DoS Log</a></li>
 @endsection
 @section('scripts')
-  <script src="/js/flot-real.js"></script>
-  <script src="/js/flot-time.js"></script>
+  <script src="/js/excanvas.min.js"></script>
+  <script src="/js/jquery.flot.min.js"></script>
+  <script src="js/flot.time.js"></script>
+  <script src="/js/flot.js"></script>
 @endsection
 @section('content')
 <div class="row">

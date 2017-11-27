@@ -5,32 +5,31 @@ using namespace std;
 unsigned int tcp, udp, icmp, igmp, others, total = 0;
 
 Ids::Ids(){
-      // this->tcp = 0;
-      // this->udp = 0;
-      // this->icmp = 0;
-      // this->igmp = 0;
-      // this->others = 0;
-      // this->total = 0;
-      // cout << "Initialized Datas" << endl;
 }
 
 std::string Ids::setProtocol(){
-    string datas = "";
-    datas += "{'TCP':'";
-    datas += to_string(tcp);
-    datas += "','UDP':'";
-    datas += to_string(udp);
-    datas += "','ICMP':'";
-    datas += to_string(icmp);
-    datas += "','IGMP':'";
-    datas += to_string(igmp);
-    datas += "','Others':'";
-    datas += to_string(others);
-    datas += "','Total':'";
-    datas += to_string(total);
-    datas += "'}";
-    cout << "TEST : " << datas << endl;
-    return datas;
+    // string datas = "";
+    // datas += "{'TCP':'";
+    // datas += to_string(tcp);
+    // datas += "','UDP':'";
+    // datas += to_string(udp);
+    // datas += "','ICMP':'";
+    // datas += to_string(icmp);
+    // datas += "','IGMP':'";
+    // datas += to_string(igmp);
+    // datas += "','Others':'";
+    // datas += to_string(others);
+    // datas += "','Total':'";
+    // datas += to_string(total);
+    // datas += "'}";
+    string result = to_string(tcp) + ",";
+    result += to_string(udp) + ",";
+    result += to_string(icmp) + ",";
+    result += to_string(igmp) + ",";
+    result += to_string(others) + ",";
+    result += to_string(total);
+    cout << "TEST : " << result << endl;
+    return result;
 }
 
 void Ids::setup(char *ptr){

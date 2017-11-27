@@ -8,7 +8,6 @@
     <meta name="author" content="J.IN12D067 MUST-SICT">
   	<title>PCAP-IDS @yield('title')</title>
     <script src="/js/jquery.js"></script>
-    <script></script>
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
     <link href="/dist/css/sb-admin-2.css" rel="stylesheet">
