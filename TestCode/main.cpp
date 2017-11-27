@@ -28,6 +28,14 @@ void *socketProcess(void *){
     socket.startSock();
 }
 
+void *intervalProcess(void *){
+    Ids ids;
+    while(1){
+      sleep(1);
+      cout << "Interval test : " << ids.freqUp() << endl;
+    }
+}
+
 int main(int argc, char *argv[]){
     //checking arguments
     if (argc < 2){
@@ -41,9 +49,9 @@ int main(int argc, char *argv[]){
       exit(1);
     }
     //Creating threads
-    pthread_t loopThread, sqlThread, sockThread;
+    pthread_t loopThread, sqlThread, sockThread, intervalThread;
     const char *dev = argv[1];
-    int loop, sql, sock;
+    int loop, sql, sock, interval;
     loop = pthread_create(&loopThread, NULL, mainProcess, (void *)dev);
     if (loop){
       cout << "Error unable to create thread : " << loop << endl;
@@ -59,7 +67,13 @@ int main(int argc, char *argv[]){
       cout << "Error unable to create thread : " << sock << endl;
       exit(1);
     }
+    interval = pthread_create(&intervalThread, NULL, intervalProcess, NULL);
+    if (interval){
+      cout << "Error unable to create thread :" << interval << endl;
+      exit(1);
+    }
     pthread_join(loopThread, NULL);
     pthread_join(sqlThread, NULL);
     pthread_join(sockThread, NULL);
+    pthread_join(intervalThread, NULL);
 }

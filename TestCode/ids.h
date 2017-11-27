@@ -43,6 +43,7 @@ class Ids{
     void ext_Tcp();
     void ext_Udp();
     void writeData();
+    unsigned int freqUp();
     //unsigned int tcp, udp, icmp, others, total, igmp;
 };
 

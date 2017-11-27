@@ -1,4 +1,3 @@
-
 $(function() {
 
     var container = $("#flot-line-chart-moving");
@@ -10,33 +9,29 @@ $(function() {
 
     //
 
-		var totalp;
     var data = [];
 
-		function getData(){
-			var res = [];
-			$.ajax({
-				url:'/getData.php',
-				type:'GET',
-				data:{
-					format:'json'
-				},
-				error: function(){
-					alert('Cannot get data')
-				},
-				dataType:'json',
-				success: function(json_data){
-          data.shift();
-          for(var i=0; i < 4; i++){
-            data.push(json_data[i]);
-          }
-          totalp = json_data[5];
-				}
-			});
-      console.log(totalp);
-      console.log(data);
-			return res;
-		}
+    function progData(){
+        if (data.length){
+          data = data.slice(1);
+        }
+        while(data.length < maximum) {
+          $.ajax({
+            type: "get",
+            url: "/getData.php",
+            dataType: "json",
+            success: function(php_data){
+              data.push(php_data[0]);
+            }
+          });
+        }
+        var res = [];
+        for (var i = 0; i < data.lenght; i++){
+          res.push([i, data[i]])
+        }
+        console.log(data);
+        return res;
+    }
 
     function getRandomData() {
 
@@ -56,13 +51,14 @@ $(function() {
         for (var i = 0; i < data.length; ++i) {
             res.push([i, data[i]])
         }
+
         return res;
     }
 
     //
 
     series = [{
-        data: getData(),
+        data: getRandomData(),
         lines: {
             fill: true
         }
@@ -99,16 +95,13 @@ $(function() {
             }
         },
         xaxis: {
-          mode: "time",
-          timeformat: "%H/%M/%S",
-            tickFormatter: function(v,axis) {
-              var d = new Date(v);
-              return d.getUTCDate() + "/" + (d.getUTCMonth() + 1);
+            tickFormatter: function() {
+                return "";
             }
         },
         yaxis: {
             min: 0,
-            max: 1000
+            max: 100
         },
         legend: {
             show: true
@@ -118,7 +111,8 @@ $(function() {
     // Update the random dataset at 25FPS for a smoothly-animating chart
 
     setInterval(function updateRandom() {
-        series[0].data = getData();
+        //series[0].data = getRandomData();
+        series[0].data = progData();
         plot.setData(series);
         plot.draw();
     }, 1000);

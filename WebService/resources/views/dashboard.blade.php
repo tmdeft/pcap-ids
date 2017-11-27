@@ -6,10 +6,16 @@
   <li><a href="/doslog">DoS Log</a></li>
 @endsection
 @section('scripts')
-  <script src="/js/excanvas.min.js"></script>
-  <script src="/js/jquery.flot.min.js"></script>
-  <script src="js/flot.time.js"></script>
-  <script src="/js/flot.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/metisMenu.min.js"></script>
+  <script src="/js/excanvas.js"></script>
+  <script src="/js/jquery.flot.js"></script>
+  <script src="/js/jquery.flot.resize.js"></script>
+  <script src="/js/jquery.flot.time.js"></script>
+  <script src="/js/jquery.flot.tooltip.min.js"></script>
+  <script src="/js/flot-data.js"></script>
+  <script src="/js/sb-admin-2.js"></script>
 @endsection
 @section('content')
 <div class="row">

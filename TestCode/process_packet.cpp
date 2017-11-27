@@ -1,13 +1,21 @@
 #include "ids.h"
+#include <time.h>
 
 using namespace std;
 
-unsigned int tcp, udp, icmp, igmp, others, total = 0;
+unsigned int tcp, udp, icmp, igmp, others, total, intVal = 0;
+unsigned int packet_max = 0;
+clock_t start_time;
 
 Ids::Ids(){
 }
 
 std::string Ids::setProtocol(){
+    double status = (double)(clock() - start_time);
+    int test = freqUp();
+    string result = to_string(test) + ",";
+    result += to_string(packet_max) + ",";
+    result += to_string(status);
     // string datas = "";
     // datas += "{'TCP':'";
     // datas += to_string(tcp);
@@ -22,13 +30,13 @@ std::string Ids::setProtocol(){
     // datas += "','Total':'";
     // datas += to_string(total);
     // datas += "'}";
-    string result = to_string(tcp) + ",";
-    result += to_string(udp) + ",";
-    result += to_string(icmp) + ",";
-    result += to_string(igmp) + ",";
-    result += to_string(others) + ",";
-    result += to_string(total);
-    cout << "TEST : " << result << endl;
+    // string result = to_string(tcp) + ",";
+    // result += to_string(udp) + ",";
+    // result += to_string(icmp) + ",";
+    // result += to_string(igmp) + ",";
+    // result += to_string(others) + ",";
+    // result += to_string(total);
+    // cout << "TEST : " << result << endl;
     return result;
 }
 
@@ -42,7 +50,18 @@ void Ids::setup(char *ptr){
       exit(1);
     }
     cout << "PCAP:Chosen interface : " << dev << endl;
+    start_time = clock();
     pcap_loop(handle, -1, this->process_packet, NULL);
+}
+
+unsigned int Ids::freqUp(){
+    unsigned int test;
+    test = intVal;
+    intVal = 0;
+    if(packet_max < test)
+      packet_max = test;
+    cout << "Maximum interval : " << packet_max << endl;
+    return test;
 }
 
 void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *buffer){
@@ -50,6 +69,7 @@ void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u
     //Get the IP Header part of this packet , excluding the ethernet header
     struct iphdr *iph = (struct iphdr*)(buffer + sizeof(struct ethhdr));
     ++total;
+    ++intVal;
     switch (iph->protocol) //Check the Protocol and do accordingly...
     {
         case 1:  //ICMP Protocol
@@ -75,7 +95,7 @@ void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u
             ++others;
             break;
     }
-    cout << "PCAP: TCP:" << tcp << " UDP:" << udp << " ICMP:" << icmp << " IGMP:" << igmp << " Others:" << others << " Total:" << total << "\r";
+    //cout << "PCAP: TCP:" << tcp << " UDP:" << udp << " ICMP:" << icmp << " IGMP:" << igmp << " Others:" << others << " Total:" << total << "\r";
 }
 
 Ids::~Ids(){
