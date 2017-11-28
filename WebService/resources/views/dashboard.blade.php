@@ -8,14 +8,8 @@
 @section('scripts')
   <script src="/js/jquery.min.js"></script>
   <script src="/js/bootstrap.min.js"></script>
-  <script src="/js/metisMenu.min.js"></script>
-  <script src="/js/excanvas.js"></script>
   <script src="/js/jquery.flot.js"></script>
-  <script src="/js/jquery.flot.resize.js"></script>
-  <script src="/js/jquery.flot.time.js"></script>
-  <script src="/js/jquery.flot.tooltip.min.js"></script>
-  <script src="/js/flot-data.js"></script>
-  <script src="/js/sb-admin-2.js"></script>
+  <script src="/js/networkflow.js"></script>
 @endsection
 @section('content')
 <div class="row">
@@ -110,12 +104,12 @@
               <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            Moving Line Chart Example
+                            Network Flow
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <div class="flot-chart">
-                                <div class="flot-chart-content" id="flot-line-chart-moving"></div>
+                                <div class="flot-chart-content" id="networkFlow"></div>
                             </div>
                         </div>
                         <!-- /.panel-body -->

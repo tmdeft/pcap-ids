@@ -1,6 +1,6 @@
 $(function() {
 
-    var container = $("#flot-line-chart-moving");
+    var container = $("#networkFlow");
 
     // Determine how many data points to keep based on the placeholder's initial size;
     // this gives us a nice high-res plot while avoiding more than one point per pixel.
@@ -10,26 +10,24 @@ $(function() {
     //
 
     var data = [];
+    var test = [];
+    var maxTest = 100;
 
-    function progData(){
-        if (data.length){
-          data = data.slice(1);
-        }
-        while(data.length < maximum) {
-          $.ajax({
+    function getData(){
+        $.ajax({
+            url:"/getData.php",
             type: "get",
-            url: "/getData.php",
             dataType: "json",
-            success: function(php_data){
-              data.push(php_data[0]);
+            success: function(response){
+                test.push(response[0]);
+                maxTest = response[1];
             }
-          });
-        }
+        });
         var res = [];
-        for (var i = 0; i < data.lenght; i++){
-          res.push([i, data[i]])
+        for (var i = 0; i < data.length; ++i){
+            res.push([i, test[i]])
         }
-        console.log(data);
+        console.log(maxTest);
         return res;
     }
 
@@ -107,14 +105,15 @@ $(function() {
             show: true
         }
     });
+    console.log(maxTest)
 
     // Update the random dataset at 25FPS for a smoothly-animating chart
 
     setInterval(function updateRandom() {
-        //series[0].data = getRandomData();
-        series[0].data = progData();
+        series[0].data = getData();
+        plot.getOptions().yaxes[0].max = maxTest;
         plot.setData(series);
         plot.draw();
-    }, 1000);
+    }, 150);
 
 });

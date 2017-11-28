@@ -11,11 +11,9 @@ Ids::Ids(){
 }
 
 std::string Ids::setProtocol(){
-    double status = (double)(clock() - start_time);
     int test = freqUp();
     string result = to_string(test) + ",";
-    result += to_string(packet_max) + ",";
-    result += to_string(status);
+    result += to_string(packet_max);
     // string datas = "";
     // datas += "{'TCP':'";
     // datas += to_string(tcp);
