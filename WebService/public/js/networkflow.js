@@ -14,6 +14,9 @@ $(function() {
     var maxTest = 100;
 
     function getData(){
+        if(data.length){
+            data = data.slice(1);
+        }
         $.ajax({
             url:"/getData.php",
             type: "get",
@@ -28,6 +31,7 @@ $(function() {
             res.push([i, test[i]])
         }
         console.log(maxTest);
+        console.log(data);
         return res;
     }
 
@@ -111,9 +115,8 @@ $(function() {
 
     setInterval(function updateRandom() {
         series[0].data = getData();
-        plot.getOptions().yaxes[0].max = maxTest;
         plot.setData(series);
         plot.draw();
-    }, 150);
+    }, 1000);
 
 });

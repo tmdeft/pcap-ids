@@ -1,11 +1,9 @@
 #include "ids.h"
-#include <time.h>
 
 using namespace std;
 
-unsigned int tcp, udp, icmp, igmp, others, total, intVal = 0;
+unsigned int tcp, udp, icmp, igmp, others, total, intVal, http, https, dns, dhcp = 0;
 unsigned int packet_max = 0;
-clock_t start_time;
 
 Ids::Ids(){
 }
@@ -13,7 +11,11 @@ Ids::Ids(){
 std::string Ids::setProtocol(){
     int test = freqUp();
     string result = to_string(test) + ",";
-    result += to_string(packet_max);
+    result += to_string(packet_max) + ",";
+    result += to_string(http) + ",";
+    result += to_string(https) + ",";
+    result += to_string(dns) + ",";
+    result += to_string(dhcp);
     // string datas = "";
     // datas += "{'TCP':'";
     // datas += to_string(tcp);
@@ -48,7 +50,6 @@ void Ids::setup(char *ptr){
       exit(1);
     }
     cout << "PCAP:Chosen interface : " << dev << endl;
-    start_time = clock();
     pcap_loop(handle, -1, this->process_packet, NULL);
 }
 
@@ -81,6 +82,7 @@ void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u
 
         case 6:  //TCP Protocol
             ++tcp;
+            ext_Tcp(buffer, size);
             //print_tcp_packet(buffer , size);
             break;
 
@@ -94,6 +96,71 @@ void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u
             break;
     }
     //cout << "PCAP: TCP:" << tcp << " UDP:" << udp << " ICMP:" << icmp << " IGMP:" << igmp << " Others:" << others << " Total:" << total << "\r";
+}
+
+void Ids::ext_Tcp(const u_char * Buffer, int Size){
+    unsigned short iphdrlen;
+
+    struct iphdr *iph = (struct iphdr *)( Buffer  + sizeof(struct ethhdr) );
+    iphdrlen = iph->ihl*4;
+
+    struct tcphdr *tcph=(struct tcphdr*)(Buffer + iphdrlen + sizeof(struct ethhdr));
+
+    int header_size =  sizeof(struct ethhdr) + iphdrlen + tcph->doff*4;
+    tcpData tcpd;
+    //print_ip_header(Buffer,Size);
+    unsigned int dport = ntohs(tcph->dest);
+    unsigned int sport = ntohs(tcph->source);
+
+    if(tcph->syn == 1){
+        switch(dport){
+            case 80: ++http; break;
+            case 443: ++https; break;
+            case 53: ++dns; break;
+            case 67: ++dhcp; break;
+            default: break;
+        }
+    }
+    // tcpd.sport = ntohs(tcph->source);
+    // tcpd.dport = ntohs(tcph->dest);
+    // tcpd.seq_num = ntohl(tcph->seq);
+    // tcpd.ack_num = ntohl(tcph->ack_seq);
+    // tcpd.hdr_length = (unsigned int)tcph->doff * 4;
+    // tcpd.urgent_flag = (unsigned int)tcph->urg;
+    // tcpd.ack_flag = (unsigned int)tcph->ack;
+
+    // fprintf(logfile , "\n");
+    // fprintf(logfile , "TCP Header\n");
+    // fprintf(logfile , "   |-Source Port      : %u\n",ntohs(tcph->source));
+    // fprintf(logfile , "   |-Destination Port : %u\n",ntohs(tcph->dest));
+    // fprintf(logfile , "   |-Sequence Number    : %u\n",ntohl(tcph->seq));
+    // fprintf(logfile , "   |-Acknowledge Number : %u\n",ntohl(tcph->ack_seq));
+    // fprintf(logfile , "   |-Header Length      : %d DWORDS or %d BYTES\n" ,(unsigned int)tcph->doff,(unsigned int)tcph->doff*4);
+    // //fprintf(logfile , "   |-CWR Flag : %d\n",(unsigned int)tcph->cwr);
+    // //fprintf(logfile , "   |-ECN Flag : %d\n",(unsigned int)tcph->ece);
+    // fprintf(logfile , "   |-Urgent Flag          : %d\n",(unsigned int)tcph->urg);
+    // fprintf(logfile , "   |-Acknowledgement Flag : %d\n",(unsigned int)tcph->ack);
+    // fprintf(logfile , "   |-Push Flag            : %d\n",(unsigned int)tcph->psh);
+    // fprintf(logfile , "   |-Reset Flag           : %d\n",(unsigned int)tcph->rst);
+    // fprintf(logfile , "   |-Synchronise Flag     : %d\n",(unsigned int)tcph->syn);
+    // fprintf(logfile , "   |-Finish Flag          : %d\n",(unsigned int)tcph->fin);
+    // fprintf(logfile , "   |-Window         : %d\n",ntohs(tcph->window));
+    // fprintf(logfile , "   |-Checksum       : %d\n",ntohs(tcph->check));
+    // fprintf(logfile , "   |-Urgent Pointer : %d\n",tcph->urg_ptr);
+    // fprintf(logfile , "\n");
+    // fprintf(logfile , "                        DATA Dump                         ");
+    // fprintf(logfile , "\n");
+    //
+    // fprintf(logfile , "IP Header\n");
+    // PrintData(Buffer,iphdrlen);
+    //
+    // fprintf(logfile , "TCP Header\n");
+    // PrintData(Buffer+iphdrlen,tcph->doff*4);
+    //
+    // fprintf(logfile , "Data Payload\n");
+    // PrintData(Buffer + header_size , Size - header_size );
+    //
+    // fprintf(logfile , "\n###########################################################");
 }
 
 Ids::~Ids(){
