@@ -59,7 +59,10 @@ unsigned int Ids::freqUp(){
     intVal = 0;
     if(packet_max < test)
       packet_max = test;
-    cout << "Maximum interval : " << packet_max << endl;
+    if(test > 100)
+      cout << "Warning" << endl;
+    //cout << "Maximum interval : " << packet_max << endl;
+    cout << "TCP : " << tcp << " UDP : " << udp << " ICMP : " << icmp << " IGMP : " << igmp << " HTTP : " << http << " HTTPS : " << https << " DNS : " << dns << " DHCP : " << dhcp << " Others : " << others << " Total : " << total << endl;
     return test;
 }
 

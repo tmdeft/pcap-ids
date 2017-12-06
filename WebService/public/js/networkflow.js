@@ -23,7 +23,7 @@ $(function() {
             dataType: "json",
             success: function(response){
                 test.push(response[0]);
-                maxTest = response[1];
+                maxTest = parseInt(response[1]);
             }
         });
         var res = [];
@@ -31,7 +31,6 @@ $(function() {
             res.push([i, test[i]])
         }
         console.log(maxTest);
-        console.log(data);
         return res;
     }
 
@@ -114,8 +113,11 @@ $(function() {
     // Update the random dataset at 25FPS for a smoothly-animating chart
 
     setInterval(function updateRandom() {
+        var axes = plot.getAxes();
+        axes.yaxis.options.max = maxTest;
         series[0].data = getData();
         plot.setData(series);
+        plot.setupGrid();
         plot.draw();
     }, 1000);
 

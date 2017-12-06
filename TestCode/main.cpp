@@ -32,7 +32,7 @@ void *intervalProcess(void *){
     Ids ids;
     while(1){
       sleep(1);
-      cout << "Interval test : " << ids.freqUp() << endl;
+      ids.freqUp();
     }
 }
 
