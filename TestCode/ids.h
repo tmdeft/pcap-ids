@@ -4,7 +4,6 @@
 #include <pcap.h>
 #include <iostream>
 #include <stdio.h>
-#include <string>
 #include <stdlib.h> // for exit()
 #include <string.h> //for memset
 #include <sys/socket.h>
@@ -40,7 +39,7 @@ class Ids{
     std::string setProtocol();
     static void process_packet(u_char *, const struct pcap_pkthdr *, const u_char *);
     static void ext_Tcp(const u_char *, int);
-    void ext_Udp();
+    static void ext_Udp(const u_char *, int);
     void writeData();
     unsigned int freqUp();
     struct tcpData{

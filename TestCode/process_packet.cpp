@@ -1,46 +1,35 @@
 #include "ids.h"
+#include <sys/ioctl.h>
+#include <netinet/in.h>
+#include <net/if.h>
+
 
 using namespace std;
 
-unsigned int tcp, udp, icmp, igmp, others, total, intVal, http, https, dns, dhcp = 0;
+unsigned int tcp, udp, icmp, igmp, others, total, intVal, http, https, dns, dhcp, ftp, ssh = 0;
 unsigned int packet_max = 0;
+string machineAddr = "";
+struct sockaddr_in dest;
 
 Ids::Ids(){
 }
 
 std::string Ids::setProtocol(){
+    //data sending function
     int test = freqUp();
     string result = to_string(test) + ",";
     result += to_string(packet_max) + ",";
     result += to_string(http) + ",";
     result += to_string(https) + ",";
     result += to_string(dns) + ",";
-    result += to_string(dhcp);
-    // string datas = "";
-    // datas += "{'TCP':'";
-    // datas += to_string(tcp);
-    // datas += "','UDP':'";
-    // datas += to_string(udp);
-    // datas += "','ICMP':'";
-    // datas += to_string(icmp);
-    // datas += "','IGMP':'";
-    // datas += to_string(igmp);
-    // datas += "','Others':'";
-    // datas += to_string(others);
-    // datas += "','Total':'";
-    // datas += to_string(total);
-    // datas += "'}";
-    // string result = to_string(tcp) + ",";
-    // result += to_string(udp) + ",";
-    // result += to_string(icmp) + ",";
-    // result += to_string(igmp) + ",";
-    // result += to_string(others) + ",";
-    // result += to_string(total);
-    // cout << "TEST : " << result << endl;
+    result += to_string(dhcp) + ",";
+    result += to_string(ssh) + ",";
+    result += to_string(ftp);
     return result;
 }
 
 void Ids::setup(char *ptr){
+    //setting up device
     char *dev = ptr, errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle;
     handle = pcap_open_live(dev, BUFSIZ, 1, 1000, errbuf);
@@ -50,6 +39,17 @@ void Ids::setup(char *ptr){
       exit(1);
     }
     cout << "PCAP:Chosen interface : " << dev << endl;
+    //getting IP address of an interface
+    int fd;
+    struct ifreq ifr;
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+    ifr.ifr_addr.sa_family = AF_INET;
+    strncpy(ifr.ifr_name, dev, IFNAMSIZ - 1);
+    ioctl(fd, SIOCGIFADDR, &ifr);
+    close(fd);
+    machineAddr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+    cout << "IP Address : " << machineAddr << endl;
+    //cout << "ADDRESS : " << inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
     pcap_loop(handle, -1, this->process_packet, NULL);
 }
 
@@ -62,7 +62,7 @@ unsigned int Ids::freqUp(){
     if(test > 100)
       cout << "Warning" << endl;
     //cout << "Maximum interval : " << packet_max << endl;
-    cout << "TCP : " << tcp << " UDP : " << udp << " ICMP : " << icmp << " IGMP : " << igmp << " HTTP : " << http << " HTTPS : " << https << " DNS : " << dns << " DHCP : " << dhcp << " Others : " << others << " Total : " << total << endl;
+    cout << "TCP : " << tcp << " UDP : " << udp << " ICMP : " << icmp << " IGMP : " << igmp << " SSH: " << ssh << " FTP: " << ftp << " HTTP : " << http << " HTTPS : " << https << " DNS : " << dns << " DHCP : " << dhcp << " Others : " << others << " Total : " << total << endl;
     return test;
 }
 
@@ -91,6 +91,7 @@ void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u
 
         case 17: //UDP Protocol
             ++udp;
+            ext_Udp(buffer, size);
             //print_udp_packet(buffer , size);
             break;
 
@@ -103,26 +104,40 @@ void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u
 
 void Ids::ext_Tcp(const u_char * Buffer, int Size){
     unsigned short iphdrlen;
-
     struct iphdr *iph = (struct iphdr *)( Buffer  + sizeof(struct ethhdr) );
     iphdrlen = iph->ihl*4;
-
     struct tcphdr *tcph=(struct tcphdr*)(Buffer + iphdrlen + sizeof(struct ethhdr));
-
     int header_size =  sizeof(struct ethhdr) + iphdrlen + tcph->doff*4;
-    tcpData tcpd;
-    //print_ip_header(Buffer,Size);
+    //tcpData tcpd;
     unsigned int dport = ntohs(tcph->dest);
     unsigned int sport = ntohs(tcph->source);
+    memset(&dest, 0, sizeof(dest));
+    dest.sin_addr.s_addr = iph->daddr;
+    string tmpAddr = inet_ntoa(dest.sin_addr);
 
-    if(tcph->syn == 1){
-        switch(dport){
-            case 80: ++http; break;
-            case 443: ++https; break;
-            case 53: ++dns; break;
-            case 67: ++dhcp; break;
-            default: break;
-        }
+    if(!tmpAddr.compare(machineAddr)){
+      switch(dport){
+          case 80: ++http; break;
+          case 443: ++https; break;
+          case 53: ++dns; break;
+          case 67: ++dhcp; break;
+          case 22: ++ssh; break;
+          case 20: ++ftp; break;
+          case 21: ++ftp; break;
+          default: break;
+      }
+    }
+    else {
+      switch(sport){
+          case 80: ++http; break;
+          case 443: ++https; break;
+          case 53: ++dns; break;
+          case 67: ++dhcp; break;
+          case 22: ++ssh; break;
+          case 20: ++ftp; break;
+          case 21: ++ftp; break;
+          default: break;
+      }
     }
     // tcpd.sport = ntohs(tcph->source);
     // tcpd.dport = ntohs(tcph->dest);
@@ -164,6 +179,47 @@ void Ids::ext_Tcp(const u_char * Buffer, int Size){
     // PrintData(Buffer + header_size , Size - header_size );
     //
     // fprintf(logfile , "\n###########################################################");
+}
+
+void Ids::ext_Udp(const u_char *Buffer, int Size){
+    unsigned short iphdrlen;
+
+    struct iphdr *iph = (struct iphdr *)(Buffer +  sizeof(struct ethhdr));
+    iphdrlen = iph->ihl*4;
+
+    struct udphdr *udph = (struct udphdr*)(Buffer + iphdrlen  + sizeof(struct ethhdr));
+
+    int header_size =  sizeof(struct ethhdr) + iphdrlen + sizeof udph;
+
+    unsigned int dport = ntohs(udph->dest);
+    unsigned int sport = ntohs(udph->source);
+
+    memset(&dest, 0, sizeof(dest));
+    dest.sin_addr.s_addr = iph->daddr;
+    string tmpAddr = inet_ntoa(dest.sin_addr);
+
+    if(!tmpAddr.compare(machineAddr)){
+        switch(dport){
+            case 53: dns++; break;
+            default: break;
+        }
+    }
+    else
+        switch(sport){
+            case 53: dns++; break;
+        }
+
+
+    // fprintf(logfile , "\n\n***********************UDP Packet*************************\n");
+    // fprintf(logfile , "\nUDP Header\n");
+    // fprintf(logfile , "   |-Source Port      : %d\n" , ntohs(udph->source));
+    // fprintf(logfile , "   |-Destination Port : %d\n" , ntohs(udph->dest));
+    // fprintf(logfile , "   |-UDP Length       : %d\n" , ntohs(udph->len));
+    // fprintf(logfile , "   |-UDP Checksum     : %d\n" , ntohs(udph->check));
+    // fprintf(logfile , "\n");
+    // fprintf(logfile , "IP Header\n");
+    // fprintf(logfile , "UDP Header\n");
+    // fprintf(logfile , "Data Payload\n");
 }
 
 Ids::~Ids(){
