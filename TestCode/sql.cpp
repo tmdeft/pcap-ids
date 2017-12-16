@@ -57,8 +57,17 @@ bool Sql::connect(){
   return state;
 }
 
-void Sql::insertData(){
-    //cout << "Data inserted" << this->dbUser << endl;
+void Sql::insertData(std::string ip, std::string mac, unsigned int port){
+    // string query = "INSERT INTO dosLog(IP_Address, MAC_Address, Port)VALUES('";
+    // query += ip + "','";
+    // query += mac + "',";
+    // query += port + ")";
+    pstmt = con->prepareStatement("INSERT INTO dosLog(IP_Address,MAC_Address,Port) VALUES(?,?,?)");
+    pstmt->setString(1,ip);
+    pstmt->setString(2,mac);
+    pstmt->setInt(3,port);
+    pstmt->execute();
+    delete pstmt;
 }
 
 void Sql::addData(){

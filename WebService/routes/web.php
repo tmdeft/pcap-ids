@@ -24,5 +24,6 @@ Route::get('/app',function(){
     return view('application');
 });
 Route::get('/doslog',function(){
-    return view('doslog');
+    $data = DB::table('dosLog')->get();
+    return view('doslog', ['data' => $data]);
 });

@@ -21,7 +21,7 @@ class Sql {
     Sql();
     ~Sql();
     bool connect();
-    void insertData();
+    void insertData(std::string, std::string, unsigned int);
     void addData();
     void selectData();
   private:

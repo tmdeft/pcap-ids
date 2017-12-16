@@ -17,9 +17,6 @@ void *sqlProcess(void *){
     if (state == false){
       sql.connect();
     }
-    sql.insertData();
-    sql.addData();
-    sql.selectData();
 }
 
 void *socketProcess(void *){
@@ -40,6 +37,7 @@ void *intervalProcess(void *){
           port = ids.getPort();
           ipAddress = ids.getIp();
           macAddress = ids.getMac();
+          sql.insertData(ipAddress, macAddress, port);
       }
     }
 }
