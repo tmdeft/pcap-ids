@@ -9,6 +9,7 @@ using namespace std;
 unsigned int tcp, udp, icmp, igmp, others, total, intVal, http, https, dns, dhcp, ftp, ssh = 0;
 unsigned int packet_max = 0;
 string machineAddr = "";
+string ifname = "";
 struct sockaddr_in dest;
 
 Ids::Ids(){
@@ -24,7 +25,9 @@ std::string Ids::setProtocol(){
     result += to_string(dns) + ",";
     result += to_string(dhcp) + ",";
     result += to_string(ssh) + ",";
-    result += to_string(ftp);
+    result += to_string(ftp) + ",";
+    result += machineAddr + ",";
+    result += ifname;
     return result;
 }
 
@@ -39,6 +42,7 @@ void Ids::setup(char *ptr){
       exit(1);
     }
     cout << "PCAP:Chosen interface : " << dev << endl;
+    ifname = dev;
     //getting IP address of an interface
     int fd;
     struct ifreq ifr;

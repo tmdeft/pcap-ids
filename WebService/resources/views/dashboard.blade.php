@@ -104,7 +104,8 @@
               <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            Network Flow
+                            NIC : <span id="ifnameId"></span><br>
+                            IP Address : <span id="ipaddressId"></span>
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">

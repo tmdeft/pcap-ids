@@ -24,6 +24,8 @@ $(function() {
             success: function(response){
                 test.push(response[0]);
                 maxTest = parseInt(response[1]);
+                document.getElementById("ipaddressId").innerHTML = response[8];
+                document.getElementById("ifnameId").innerHTML = response[9];
             }
         });
         var res = [];

@@ -6,6 +6,7 @@
   socket_write($socket,"test",strlen("test"));
   $result = socket_read($socket,65536);
   socket_close($socket);
+  //echo $result;
   $dataarr = explode(",",$result);
   // $cData->TCP = $dataarr[0];
   // $cData->UDP = $dataarr[1];
