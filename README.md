@@ -8,14 +8,14 @@ This tool is made for education purpose. The tool sniffs the network adapter ext
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+Dependencies for PCAP-IDS
 
 ```
 C++, C compilers
 Libpcap
 Libmysqlcppconn /MySQL C++ connector/
 MySQL with database configured
-Apache server with PHP 5.0 support
+Apache server with PHP 7.0 support
 ```
 
 ### Installing
@@ -62,9 +62,9 @@ Add additional notes about how to deploy this on a live system
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [Laravel](https://laravel.com/) - The web framework used
+* [Libpcap](http://www.tcpdump.org/) - Library for live packet capture
+* [MySQL](https://www.mysql.com/) - Database management
 
 ## Contributing
 
@@ -76,9 +76,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Naiame Nel'theri** - *Initial work*
 
 ## License
 
@@ -86,6 +84,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
+* Thanks to binarytides which gave me perfect example for extracting packets with libpcap
