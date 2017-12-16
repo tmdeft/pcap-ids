@@ -21,18 +21,11 @@
                                   <i class="fa fa-comments fa-5x"></i>
                               </div>
                               <div class="col-xs-9 text-right">
-                                  <div class="huge">26</div>
-                                  <div>Total attacks</div>
+                                  <div class="huge" id="httpsCount">0</div>
+                                  <div>HTTPS</div>
                               </div>
                           </div>
                       </div>
-                      <a href="#">
-                          <div class="panel-footer">
-                              <span class="pull-left">View Details</span>
-                              <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                              <div class="clearfix"></div>
-                          </div>
-                      </a>
                   </div>
               </div>
               <div class="col-lg-3 col-md-6">
@@ -43,18 +36,11 @@
                                   <i class="fa fa-tasks fa-5x"></i>
                               </div>
                               <div class="col-xs-9 text-right">
-                                  <div class="huge">12</div>
-                                  <div>New Tasks!</div>
+                                  <div class="huge" id="httpCount">0</div>
+                                  <div>HTTP</div>
                               </div>
                           </div>
                       </div>
-                      <a href="#">
-                          <div class="panel-footer">
-                              <span class="pull-left">View Details</span>
-                              <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                              <div class="clearfix"></div>
-                          </div>
-                      </a>
                   </div>
               </div>
               <div class="col-lg-3 col-md-6">
@@ -65,18 +51,11 @@
                                   <i class="fa fa-shopping-cart fa-5x"></i>
                               </div>
                               <div class="col-xs-9 text-right">
-                                  <div class="huge">124</div>
-                                  <div>New Orders!</div>
+                                  <div class="huge" id="dnsCount">0</div>
+                                  <div>DNS</div>
                               </div>
                           </div>
                       </div>
-                      <a href="#">
-                          <div class="panel-footer">
-                              <span class="pull-left">View Details</span>
-                              <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                              <div class="clearfix"></div>
-                          </div>
-                      </a>
                   </div>
               </div>
               <div class="col-lg-3 col-md-6">
@@ -87,18 +66,11 @@
                                   <i class="fa fa-support fa-5x"></i>
                               </div>
                               <div class="col-xs-9 text-right">
-                                  <div class="huge">13</div>
+                                  <div class="huge">0</div>
                                   <div>Total attacks</div>
                               </div>
                           </div>
                       </div>
-                      <a href="#">
-                          <div class="panel-footer">
-                              <span class="pull-left">View Details</span>
-                              <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                              <div class="clearfix"></div>
-                          </div>
-                      </a>
                   </div>
               </div>
               <div class="col-lg-12">

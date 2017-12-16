@@ -35,6 +35,9 @@ class Ids{
   public:
     Ids();
     ~Ids();
+    std::string getIp();
+    unsigned int getPort();
+    std::string getMac();
     void setup(char *);
     std::string setProtocol();
     static void process_packet(u_char *, const struct pcap_pkthdr *, const u_char *);

@@ -24,8 +24,11 @@ $(function() {
             success: function(response){
                 test.push(response[0]);
                 maxTest = parseInt(response[1]);
-                document.getElementById("ipaddressId").innerHTML = response[8];
-                document.getElementById("ifnameId").innerHTML = response[9];
+                document.getElementById("ipaddressId").innerHTML = response[5];
+                document.getElementById("ifnameId").innerHTML = response[6];
+                document.getElementById("httpCount").innerHTML = response[2];
+                document.getElementById("httpsCount").innerHTML = response[3];
+                document.getElementById("dnsCount").innerHTML = response[4];
             }
         });
         var res = [];

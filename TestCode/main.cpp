@@ -30,9 +30,17 @@ void *socketProcess(void *){
 
 void *intervalProcess(void *){
     Ids ids;
+    Sql sql;
+    unsigned int port = 0;
+    string ipAddress = "";
+    string macAddress = "";
     while(1){
       sleep(1);
-      ids.freqUp();
+      if(ids.freqUp() > 100){
+          port = ids.getPort();
+          ipAddress = ids.getIp();
+          macAddress = ids.getMac();
+      }
     }
 }
 

@@ -7,10 +7,14 @@
 using namespace std;
 
 unsigned int tcp, udp, icmp, igmp, others, total, intVal, http, https, dns, dhcp, ftp, ssh = 0;
-unsigned int packet_max = 0;
+unsigned int packet_max, attackCount, alertCount = 0;
 string machineAddr = "";
 string ifname = "";
-struct sockaddr_in dest;
+struct sockaddr_in dest,source;
+unsigned int test = 0;
+unsigned int dosPort = 0;
+string dosIp = "";
+char dosMac[20];
 
 Ids::Ids(){
 }
@@ -23,12 +27,27 @@ std::string Ids::setProtocol(){
     result += to_string(http) + ",";
     result += to_string(https) + ",";
     result += to_string(dns) + ",";
-    result += to_string(dhcp) + ",";
-    result += to_string(ssh) + ",";
-    result += to_string(ftp) + ",";
     result += machineAddr + ",";
-    result += ifname;
+    result += ifname + ",";
+    result += to_string(alertCount) + ",";
+    result += to_string(attackCount) + ",";
+    alertCount = 0;
     return result;
+}
+
+// unsigned int Ids::getAttackStatus(){
+//     return attackCount;
+// }
+
+unsigned int Ids::getPort(){
+    return dosPort;
+}
+
+std::string Ids::getIp(){
+    return dosIp;
+}
+std::string Ids::getMac(){
+    return dosMac;
 }
 
 void Ids::setup(char *ptr){
@@ -58,13 +77,14 @@ void Ids::setup(char *ptr){
 }
 
 unsigned int Ids::freqUp(){
-    unsigned int test;
     test = intVal;
     intVal = 0;
     if(packet_max < test)
       packet_max = test;
-    if(test > 100)
-      cout << "Warning" << endl;
+    if(test > 100){
+        attackCount ++;
+        alertCount ++;
+    }
     //cout << "Maximum interval : " << packet_max << endl;
     cout << "TCP : " << tcp << " UDP : " << udp << " ICMP : " << icmp << " IGMP : " << igmp << " SSH: " << ssh << " FTP: " << ftp << " HTTP : " << http << " HTTPS : " << https << " DNS : " << dns << " DHCP : " << dhcp << " Others : " << others << " Total : " << total << endl;
     return test;
@@ -107,6 +127,7 @@ void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u
 }
 
 void Ids::ext_Tcp(const u_char * Buffer, int Size){
+    struct ethhdr *eth = (struct ethhdr *)Buffer;
     unsigned short iphdrlen;
     struct iphdr *iph = (struct iphdr *)( Buffer  + sizeof(struct ethhdr) );
     iphdrlen = iph->ihl*4;
@@ -117,32 +138,38 @@ void Ids::ext_Tcp(const u_char * Buffer, int Size){
     unsigned int sport = ntohs(tcph->source);
     memset(&dest, 0, sizeof(dest));
     dest.sin_addr.s_addr = iph->daddr;
-    string tmpAddr = inet_ntoa(dest.sin_addr);
+    //string tmpAddr = inet_ntoa(dest.sin_addr);
 
-    if(!tmpAddr.compare(machineAddr)){
-      switch(dport){
-          case 80: ++http; break;
-          case 443: ++https; break;
-          case 53: ++dns; break;
-          case 67: ++dhcp; break;
-          case 22: ++ssh; break;
-          case 20: ++ftp; break;
-          case 21: ++ftp; break;
-          default: break;
-      }
+    if(tcph->syn == 1){
+        dosIp = inet_ntoa(dest.sin_addr);
+        sprintf(dosMac, "%.2X-%.2X-%.2X-%.2X-%.2X-%.2X", eth->h_dest[0] , eth->h_dest[1] , eth->h_dest[2] , eth->h_dest[3] , eth->h_dest[4] , eth->h_dest[5]);
+        switch(dport){
+            case 80: ++http; dosPort = 80; break;
+            case 443: ++https; dosPort = 443; break;
+            case 53: ++dns; dosPort = 53; break;
+            case 67: ++dhcp; dosPort = 67; break;
+            case 22: ++ssh; dosPort = 22; break;
+            case 20: ++ftp; dosPort = 20; break;
+            case 21: ++ftp; dosPort = 21; break;
+            default: break;
+        }
+
     }
-    else {
-      switch(sport){
-          case 80: ++http; break;
-          case 443: ++https; break;
-          case 53: ++dns; break;
-          case 67: ++dhcp; break;
-          case 22: ++ssh; break;
-          case 20: ++ftp; break;
-          case 21: ++ftp; break;
-          default: break;
-      }
+    else if (tcph->ack == 1){
+        dosIp = inet_ntoa(source.sin_addr);
+        sprintf(dosMac, "%.2X-%.2X-%.2X-%.2X-%.2X-%.2X", eth->h_source[0] , eth->h_source[1] , eth->h_source[2] , eth->h_source[3] , eth->h_source[4] , eth->h_source[5]);
+        switch(sport){
+            case 80: ++http; break;
+            case 443: ++https; break;
+            case 53: ++dns; break;
+            case 67: ++dhcp; break;
+            case 22: ++ssh; break;
+            case 20: ++ftp; break;
+            case 21: ++ftp; break;
+            default: break;
+        }
     }
+
     // tcpd.sport = ntohs(tcph->source);
     // tcpd.dport = ntohs(tcph->dest);
     // tcpd.seq_num = ntohl(tcph->seq);
@@ -198,21 +225,13 @@ void Ids::ext_Udp(const u_char *Buffer, int Size){
     unsigned int dport = ntohs(udph->dest);
     unsigned int sport = ntohs(udph->source);
 
-    memset(&dest, 0, sizeof(dest));
-    dest.sin_addr.s_addr = iph->daddr;
-    string tmpAddr = inet_ntoa(dest.sin_addr);
+    // memset(&dest, 0, sizeof(dest));
+    // dest.sin_addr.s_addr = iph->daddr;
+    // string tmpAddr = inet_ntoa(dest.sin_addr);
 
-    if(!tmpAddr.compare(machineAddr)){
-        switch(dport){
-            case 53: dns++; break;
-            default: break;
-        }
+    switch(dport){
+        case 53: ++dns; break;
     }
-    else
-        switch(sport){
-            case 53: dns++; break;
-        }
-
 
     // fprintf(logfile , "\n\n***********************UDP Packet*************************\n");
     // fprintf(logfile , "\nUDP Header\n");
