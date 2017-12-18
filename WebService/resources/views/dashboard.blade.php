@@ -13,29 +13,23 @@
 @endsection
 @section('content')
 <!-- The Modal -->
-  <div class="modal fade" id="myModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Haldlagad ortloo</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <div class="modal fade" id="blue-modal" tabindex="-1" role="dialog" aria-labelledby="blue-modal-label" data-color="blue">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close btn-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="blue-modal-title">Haldlagad ortloo</h4>
+          </div>
+          <div class="modal-body">
+            Haldagchiin IP hayg : <span id="attackerIp"></span>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default btn-close" data-dismiss="modal">Close</button>
+          </div>
         </div>
-
-        <!-- Modal body -->
-        <div class="modal-body">
-          Haldagchiin IP hayg : <span id="attackerIp"></span>
-        </div>
-
-        <!-- Modal footer -->
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-
       </div>
     </div>
-  </div>
+    <div id="modal-backdrop" class="modal-backdrop-transparent modal-transition"></div>
 <!-- Body -->
 <div class="row">
               <div class="col-lg-3 col-md-6">
@@ -96,6 +90,13 @@
                               </div>
                           </div>
                       </div>
+                      <a href="/doslog">
+                            <div class="panel-footer">
+                                <span class="pull-left">Delgerengui</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                      </a>
                   </div>
               </div>
               <div class="col-lg-12">

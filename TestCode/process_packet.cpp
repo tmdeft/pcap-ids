@@ -148,30 +148,30 @@ void Ids::ext_Tcp(const u_char * Buffer, int Size){
           case 443: dosIp = inet_ntoa(source.sin_addr); dosPort = 443; sprintf(dosMac, "%.2X-%.2X-%.2X-%.2X-%.2X-%.2X", eth->h_source[0] , eth->h_source[1] , eth->h_source[2] , eth->h_source[3] , eth->h_source[4] , eth->h_source[5]); break;
           case 53: dosIp = inet_ntoa(source.sin_addr); dosPort = 53; sprintf(dosMac, "%.2X-%.2X-%.2X-%.2X-%.2X-%.2X", eth->h_source[0] , eth->h_source[1] , eth->h_source[2] , eth->h_source[3] , eth->h_source[4] , eth->h_source[5]); break;
       }
-      if(tcph->syn == 1){
-          switch(dport){
-              case 80: ++http; break;
-              case 443: ++https; break;
-              case 53: ++dns; break;
-              case 67: ++dhcp; break;
-              case 22: ++ssh; break;
-              case 20: ++ftp; break;
-              case 21: ++ftp; break;
-              default: break;
-          }
-      }
-      else if (tcph->ack == 1){
-          switch(sport){
-              case 80: ++http; break;
-              case 443: ++https; break;
-              case 53: ++dns; break;
-              case 67: ++dhcp; break;
-              case 22: ++ssh; break;
-              case 20: ++ftp; break;
-              case 21: ++ftp; break;
-              default: break;
-          }
-      }
+    }
+    if(tcph->syn == 1){
+        switch(dport){
+            case 80: ++http; break;
+            case 443: ++https; break;
+            case 53: ++dns; break;
+            case 67: ++dhcp; break;
+            case 22: ++ssh; break;
+            case 20: ++ftp; break;
+            case 21: ++ftp; break;
+            default: break;
+        }
+    }
+    else if (tcph->ack == 1){
+        switch(sport){
+            case 80: ++http; break;
+            case 443: ++https; break;
+            case 53: ++dns; break;
+            case 67: ++dhcp; break;
+            case 22: ++ssh; break;
+            case 20: ++ftp; break;
+            case 21: ++ftp; break;
+            default: break;
+        }
     }
 
     // tcpd.sport = ntohs(tcph->source);

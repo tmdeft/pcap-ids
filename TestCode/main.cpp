@@ -31,13 +31,29 @@ void *intervalProcess(void *){
     unsigned int port = 0;
     string ipAddress = "";
     string macAddress = "";
+    string currentAttacker = "";
+    unsigned int cnt = 0;
     while(1){
       sleep(1);
-      if(ids.freqUp() > 300){
+      if(ids.freqUp() > 100){
           port = ids.getPort();
           ipAddress = ids.getIp();
           macAddress = ids.getMac();
-          sql.insertData(ipAddress, macAddress, port);
+          if (cnt == 0){
+              currentAttacker = ipAddress;
+              sql.insertData(ipAddress, macAddress, port);
+              cnt ++;
+          }
+          else if (cnt > 0){
+              if(currentAttacker == ipAddress){
+                  cout << "Same attacker with : " << currentAttacker << endl;
+              }
+              else {
+                  cout << "New attacker with : " << ipAddress << endl;
+                  cout << "Current attacker with : " << currentAttacker << endl;
+              }
+              cnt ++;
+          }
       }
     }
 }
