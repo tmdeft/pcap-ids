@@ -33,7 +33,7 @@ void *intervalProcess(void *){
     string macAddress = "";
     while(1){
       sleep(1);
-      if(ids.freqUp() > 100){
+      if(ids.freqUp() > 300){
           port = ids.getPort();
           ipAddress = ids.getIp();
           macAddress = ids.getMac();

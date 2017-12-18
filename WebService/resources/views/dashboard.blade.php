@@ -12,6 +12,31 @@
   <script src="/js/networkflow.js"></script>
 @endsection
 @section('content')
+<!-- The Modal -->
+  <div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Haldlagad ortloo</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+          Haldagchiin IP hayg : <span id="attackerIp"></span>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+<!-- Body -->
 <div class="row">
               <div class="col-lg-3 col-md-6">
                   <div class="panel panel-primary">
@@ -66,7 +91,7 @@
                                   <i class="fa fa-support fa-5x"></i>
                               </div>
                               <div class="col-xs-9 text-right">
-                                  <div class="huge">0</div>
+                                  <div class="huge" id="attackCountId">0</div>
                                   <div>Total attacks</div>
                               </div>
                           </div>

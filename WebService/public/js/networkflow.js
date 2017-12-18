@@ -29,6 +29,12 @@ $(function() {
                 document.getElementById("httpCount").innerHTML = response[2];
                 document.getElementById("httpsCount").innerHTML = response[3];
                 document.getElementById("dnsCount").innerHTML = response[4];
+                if(response[7] > 0){
+                    $("#myModal").modal();
+                    document.getElementById("attackerIp").innerHTML = response[9];
+                    //alert("Under attack : " + response[9]);
+                    document.getElementById("attackCountId").innerHTML = response[8];
+                }
             }
         });
         var res = [];
