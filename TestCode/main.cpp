@@ -1,5 +1,6 @@
 #include "ids.h"
 #include <pthread.h>
+#include <string>
 
 using namespace std;
 
@@ -35,24 +36,31 @@ void *intervalProcess(void *){
     unsigned int cnt = 0;
     while(1){
       sleep(1);
-      if(ids.freqUp() > 100){
+      if(ids.freqUp() > 200){
           port = ids.getPort();
           ipAddress = ids.getIp();
           macAddress = ids.getMac();
-          if (cnt == 0){
-              currentAttacker = ipAddress;
-              sql.insertData(ipAddress, macAddress, port);
-              cnt ++;
-          }
-          else if (cnt > 0){
-              if(currentAttacker == ipAddress){
-                  cout << "Same attacker with : " << currentAttacker << endl;
-              }
-              else {
-                  cout << "New attacker with : " << ipAddress << endl;
-                  cout << "Current attacker with : " << currentAttacker << endl;
-              }
-              cnt ++;
+          cout << "before if : " << ipAddress << endl;
+          if(ipAddress != "Not yet"){
+            if (cnt == 0){
+                cout << "test ip : " << ipAddress << endl;
+                currentAttacker = ipAddress;
+                //strcpy(currentAttacker, testpointer);
+                cnt ++;
+                cout << "cnt=0 IP : " << currentAttacker << endl;
+                sql.insertData(ipAddress, macAddress, port);
+            }
+            else if (cnt > 0){
+                if(currentAttacker == ipAddress){
+                    cout << "Same attacker with : " << currentAttacker << endl;
+                }
+                else {
+                    sql.insertData(ipAddress, macAddress, port);
+                    cout << "New attacker with : " << ipAddress << endl;
+                    cout << "Current attacker with : " << currentAttacker << endl;
+                }
+                cnt ++;
+            }
           }
       }
     }

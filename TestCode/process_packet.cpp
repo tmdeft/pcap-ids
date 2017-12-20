@@ -21,8 +21,8 @@ Ids::Ids(){
 
 std::string Ids::setProtocol(){
     //data sending function
-    int test = freqUp();
-    string result = to_string(test) + ",";
+    int freqTest = freqUp();
+    string result = to_string(freqTest) + ",";
     result += to_string(packet_max) + ",";
     result += to_string(http) + ",";
     result += to_string(https) + ",";
@@ -45,7 +45,10 @@ unsigned int Ids::getPort(){
 }
 
 std::string Ids::getIp(){
-    return dosIp;
+    if(dosIp != "")
+      return dosIp;
+    else if(dosIp == "")
+      return "Not yet";
 }
 std::string Ids::getMac(){
     return dosMac;
