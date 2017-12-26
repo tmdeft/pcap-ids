@@ -1,5 +1,6 @@
 #include "ids.h"
 #include <pthread.h>
+#include <string>
 
 using namespace std;
 
@@ -17,9 +18,6 @@ void *sqlProcess(void *){
     if (state == false){
       sql.connect();
     }
-    sql.insertData();
-    sql.addData();
-    sql.selectData();
 }
 
 void *socketProcess(void *){
@@ -30,9 +28,41 @@ void *socketProcess(void *){
 
 void *intervalProcess(void *){
     Ids ids;
+    Sql sql;
+    unsigned int port = 0;
+    string ipAddress = "";
+    string macAddress = "";
+    string currentAttacker = "";
+    unsigned int cnt = 0;
     while(1){
       sleep(1);
-      ids.freqUp();
+      if(ids.freqUp() > 200){
+          port = ids.getPort();
+          ipAddress = ids.getIp();
+          macAddress = ids.getMac();
+          cout << "before if : " << ipAddress << endl;
+          if(ipAddress != "Not yet"){
+            if (cnt == 0){
+                cout << "test ip : " << ipAddress << endl;
+                currentAttacker = ipAddress;
+                //strcpy(currentAttacker, testpointer);
+                cnt ++;
+                cout << "cnt=0 IP : " << currentAttacker << endl;
+                sql.insertData(ipAddress, macAddress, port);
+            }
+            else if (cnt > 0){
+                if(currentAttacker == ipAddress){
+                    cout << "Same attacker with : " << currentAttacker << endl;
+                }
+                else {
+                    sql.insertData(ipAddress, macAddress, port);
+                    cout << "New attacker with : " << ipAddress << endl;
+                    cout << "Current attacker with : " << currentAttacker << endl;
+                }
+                cnt ++;
+            }
+          }
+      }
     }
 }
 
