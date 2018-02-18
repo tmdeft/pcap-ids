@@ -39,7 +39,7 @@
                           @foreach($data as $key => $elem)
                               <tr>
                                   <th>{{$elem->ID}}</th>
-                                  <th>{{$elem->Attack_Time}}</th>
+                                  <th>{{$elem->Time}}</th>
                                   <th>{{$elem->IP_Address}}</th>
                                   <th>{{$elem->MAC_Address}}</th>
                                   <th>{{$elem->Port}}</th>
