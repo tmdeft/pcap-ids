@@ -1,9 +1,9 @@
 @extends('master')
-@section('title', 'dashboard')
+@section('title', 'Хянах самбар')
 @section('navigation')
-  <li class="active"><a href="/dashboard">Dashboard</a></li>
-  <li><a href="/app">Application Layers</a></li>
-  <li><a href="/doslog">DoS Log</a></li>
+  <li class="active"><a href="/dashboard">Хянах самбар</a></li>
+  <li><a href="/app">Хэмжээсийн график</a></li>
+  <li><a href="/doslog">Халдлагын бүртгэл</a></li>
 @endsection
 @section('scripts')
   <script src="/js/jquery.min.js"></script>
@@ -18,13 +18,13 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close btn-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="blue-modal-title">Haldlagad ortloo</h4>
+            <h4 class="modal-title" id="blue-modal-title">Халдлагад өртлөө</h4>
           </div>
           <div class="modal-body">
-            Haldagchiin IP hayg : <span id="attackerIp"></span>
+            Халдагчийн IP хаяг : <span id="attackerIp"></span>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default btn-close" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-default btn-close" data-dismiss="modal">Хаах</button>
           </div>
         </div>
       </div>
@@ -86,13 +86,13 @@
                               </div>
                               <div class="col-xs-9 text-right">
                                   <div class="huge" id="attackCountId">0</div>
-                                  <div>Total attacks</div>
+                                  <div>Нийт халдлага</div>
                               </div>
                           </div>
                       </div>
                       <a href="/doslog">
                             <div class="panel-footer">
-                                <span class="pull-left">Delgerengui</span>
+                                <span class="pull-left">Дэлгэрэнгүй</span>
                                 <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
                                 <div class="clearfix"></div>
                             </div>

@@ -1,5 +1,5 @@
 #!/bin/bash
-printf "Required dependencies:\nG++\nMySql\nPHP\nApache\nLibPcap\nLpthread\nMySql-connector-c++\nComposer\n"
+printf "Required dependencies:\nG++\nMySql\nPHP\nApache\nLibPcap\nLpthread\nMySql-connector-c++\nComposer\nNPM\n"
 printf "**********\nChecking dependencies...\n"
 state=1
 if command -v g++ >/dev/null 2>&1 ; then
@@ -48,6 +48,12 @@ if command composer -V >/dev/null 2>&1 ; then
     echo "Composer found"
 else
     echo "Composer not found"
+    state=0
+fi
+if command npm -v >/dev/null 2>&1 ; then
+    echo "NPM found"
+else
+    echo "NPM not found"
     state=0
 fi
 if [ "$state" = "1" ] ; then

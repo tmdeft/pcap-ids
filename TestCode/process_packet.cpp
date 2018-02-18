@@ -3,9 +3,9 @@
 #include <netinet/in.h>
 #include <net/if.h>
 
-
 using namespace std;
 
+//global variable declarations
 unsigned int tcp, udp, icmp, igmp, others, total, intVal, http, https, dns, dhcp, ftp, ssh = 0;
 unsigned int packet_max, attackCount, alertCount = 0;
 string machineAddr = "";
@@ -35,10 +35,6 @@ std::string Ids::setProtocol(){
     alertCount = 0;
     return result;
 }
-
-// unsigned int Ids::getAttackStatus(){
-//     return attackCount;
-// }
 
 unsigned int Ids::getPort(){
     return dosPort;

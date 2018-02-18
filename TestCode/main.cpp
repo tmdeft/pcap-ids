@@ -4,6 +4,7 @@
 
 using namespace std;
 
+//Packet processing function for thread
 void *mainProcess(void *arg){
     char *device;
     device = (char *)arg;
@@ -11,6 +12,7 @@ void *mainProcess(void *arg){
     ids.setup(device);
 }
 
+//Connection to sql database function for thread
 void *sqlProcess(void *){
     Sql sql;
     bool state;
@@ -20,12 +22,14 @@ void *sqlProcess(void *){
     }
 }
 
+//Socket creation function for thread
 void *socketProcess(void *){
     Socket socket;
     socket.getData();
     socket.startSock();
 }
 
+//Getting interface by interval
 void *intervalProcess(void *){
     Ids ids;
     Sql sql;
@@ -66,6 +70,7 @@ void *intervalProcess(void *){
     }
 }
 
+//main function
 int main(int argc, char *argv[]){
     //checking arguments
     if (argc < 2){
@@ -102,6 +107,7 @@ int main(int argc, char *argv[]){
       cout << "Error unable to create thread :" << interval << endl;
       exit(1);
     }
+    //starting threads
     pthread_join(loopThread, NULL);
     pthread_join(sqlThread, NULL);
     pthread_join(sockThread, NULL);
