@@ -60,7 +60,7 @@ printf "\n**********\nCompiling..."
 cd TestCode
 g++ -c main.cpp sql.cpp socketData.cpp process_packet.cpp
 wait $!
-g++ -o ~/Documents/test main.o sql.o socketData.o process_packet.o -lpcap -lpthread -lmysqlcppconn
+g++ -o pcapids main.o sql.o socketData.o process_packet.o -lpcap -lpthread -lmysqlcppconn
 wait $!
 printf "Done\n*Please make sure MySql user is 'ids' and password is 'QWEasd'*\n*Report any bug to j.in12d067@gmail.com*\n"
 cd ../WebService
@@ -73,4 +73,14 @@ wait $!
 php artisan cache:clear
 php artisan migrate
 wait $!
+if [ -d "~/bin" ] ; then
+    cd ../TestCode
+    cp pcapids ~/bin/
+else
+    mkdir -p ~/bin
+    cd ../TestCode
+    cp pcapids ~/bin/
+fi
+echo "PATH='$HOME/bin:$PATH'" >> ~/.zshrc
+cd ../WebService
 php artisan serve
