@@ -1,5 +1,5 @@
 #!/bin/bash
-printf "Required dependencies:\nG++\nMySql\nPHP\nApache\nLibPcap\nLpthread\nMySql-connector-c++\n"
+printf "Required dependencies:\nG++\nMySql\nPHP\nApache\nLibPcap\nLpthread\nMySql-connector-c++\nComposer\n"
 printf "**********\nChecking dependencies...\n"
 state=1
 if command -v g++ >/dev/null 2>&1 ; then
@@ -44,6 +44,12 @@ else
     echo "Apache not found!"
     state=0
 fi
+if command composer -V >/dev/null 2>&1 ; then
+    echo "Composer found"
+else
+    echo "Composer not found"
+    state=0
+fi
 if [ "$state" = "1" ] ; then
     echo "All dependencies are installed"
 else
@@ -57,3 +63,14 @@ wait $!
 g++ -o ~/Documents/test main.o sql.o socketData.o process_packet.o -lpcap -lpthread -lmysqlcppconn
 wait $!
 printf "Done\n*Please make sure MySql user is 'ids' and password is 'QWEasd'*\n*Report any bug to j.in12d067@gmail.com*\n"
+cd ../WebService
+printf "Installing Laravel dependencies\n"
+composer install
+wait $!
+cp env .env
+php artisan key:generate
+wait $!
+php artisan cache:clear
+php artisan migrate
+wait $!
+php artisan serve

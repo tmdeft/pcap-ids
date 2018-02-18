@@ -27,7 +27,7 @@ class Sql {
   private:
     std::string dbUser = "ids";
     std::string dbPass = "QWEasd";
-    std::string dbBase = "IDS";
+    std::string dbBase = "ids";
     std::string dbHost = "localhost";
 };
 
