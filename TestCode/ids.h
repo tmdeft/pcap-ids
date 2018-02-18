@@ -24,6 +24,7 @@ class Sql {
     void insertData(std::string, std::string, unsigned int);
     void addData();
     void selectData();
+    void checkTable();
   private:
     std::string dbUser = "ids";
     std::string dbPass = "QWEasd";

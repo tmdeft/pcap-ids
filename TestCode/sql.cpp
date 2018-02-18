@@ -54,7 +54,14 @@ bool Sql::connect(){
     cout << " (MySQL error code: " << e.getErrorCode();
     cout << ", SQLState: " << e.getSQLState() << " )" << endl;
   }
+  Sql::checkTable();
   return state;
+}
+
+void Sql::checkTable(){
+    pstmt = con->prepareStatement("CREATE TABLE IF NOT EXISTS dosLog(ID int not null auto_increment primary key, IP_Address varchar(320), MAC_Address varchar(500), Port int, Time TIMESTAMP default current_timestamp)");
+    pstmt->execute();
+    delete pstmt;
 }
 
 void Sql::insertData(std::string ip, std::string mac, unsigned int port){
