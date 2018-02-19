@@ -86,7 +86,7 @@
         </div>
 <!-- /.panel-heading -->
         <div class="panel-body">
-          <div id="morris-bar-chart"></div>
+          <div id="size-bar-chart"></div>
         </div>
 <!-- /.panel-body -->
       </div>
@@ -99,7 +99,7 @@
         </div>
 <!-- /.panel-heading -->
         <div class="panel-body">
-          <div id="morris-bar-chart"></div>
+          <div id="port-bar-chart"></div>
         </div>
 <!-- /.panel-body -->
       </div>

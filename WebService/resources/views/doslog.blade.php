@@ -1,9 +1,9 @@
 @extends('master')
 @section('title', 'Attack Log')
 @section('navigation')
-  <li><a href="/dashboard">Dashboard</a></li>
-  <li><a href="/app">Application Layers</a></li>
-  <li class="active"><a href="/doslog">DoS Log</a></li>
+  <li><a href="/dashboard">Хянах самбар</a></li>
+  <li><a href="/app">Хэмжээсийн график</a></li>
+  <li class="active"><a href="/doslog">Халдлагын бүртгэл</a></li>
 @endsection
 @section('scripts')
   <script src="/js/jquery.min.js"></script>
@@ -11,7 +11,7 @@
 @endsection
 @section('content')
   <div class="container">
-    <h1>DoS Log</h1>
+    <h1>Халдлагын бүртгэл</h1>
   	<div class="row">
           <div class="col-md-3">
               <form action="#" method="get">
