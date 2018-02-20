@@ -1,60 +1,76 @@
 #include "ids.h"
+#include <pcap.h>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <net/if.h>
 
-
 using namespace std;
 
-unsigned int tcp, udp, icmp, igmp, others, total, intVal, http, https, dns, dhcp, ftp, ssh = 0;
-unsigned int packet_max, attackCount, alertCount = 0;
-string machineAddr = "";
 string ifname = "";
+string machineAddr = "";
+string attackerIp = "";
+char attackerMac[200];
+unsigned int attackerPort = 0;
+unsigned int total, icmp, igmp, tcp, udp, intVal, others, currentCnt, attackCount = 0;
+unsigned int dns, dhcp, ftp, http, https, ssh, packet_max = 0;
 struct sockaddr_in dest,source;
-unsigned int test = 0;
-unsigned int dosPort = 0;
-string dosIp = "";
-char dosMac[20];
 
-Ids::Ids(){
+MainProcess::MainProcess(){
 }
 
-std::string Ids::setProtocol(){
-    //data sending function
-    int freqTest = freqUp();
-    string result = to_string(freqTest) + ",";
+MainProcess::~MainProcess(){
+}
+
+std::string MainProcess::getSocketData(){
+    string result;
+    unsigned int freqTest = freqUp();
+    result = to_string(freqTest) + ",";
     result += to_string(packet_max) + ",";
     result += to_string(http) + ",";
     result += to_string(https) + ",";
     result += to_string(dns) + ",";
     result += machineAddr + ",";
     result += ifname + ",";
-    result += to_string(alertCount) + ",";
     result += to_string(attackCount) + ",";
-    result += dosIp;
-    alertCount = 0;
+    result += to_string(attackCount) + ",";
+    if(attackerIp == "")
+      result += "Failed to retrieve IP address";
+    else
+      result += attackerIp;
     return result;
+    attackCount = 0;
 }
 
-// unsigned int Ids::getAttackStatus(){
-//     return attackCount;
-// }
-
-unsigned int Ids::getPort(){
-    return dosPort;
+void MainProcess::setCounter(){
+    attackCount ++;
 }
 
-std::string Ids::getIp(){
-    if(dosIp != "")
-      return dosIp;
-    else if(dosIp == "")
-      return "Not yet";
-}
-std::string Ids::getMac(){
-    return dosMac;
+unsigned int MainProcess::freqUp(){
+    currentCnt = intVal;
+    intVal = 0;
+    if(packet_max < currentCnt)
+        packet_max = currentCnt;
+    cout << "Total : " << total << "\nInterval : " << currentCnt << endl;
+    return currentCnt;
 }
 
-void Ids::setup(char *ptr){
+std::string MainProcess::getIp(){
+    if (attackerIp != "")
+      return attackerIp;
+    else return "Failed to retrieve IP Address";
+}
+
+unsigned int MainProcess::getPort(){
+    return attackerPort;
+}
+
+std::string MainProcess::getMac(){
+    if (string(attackerMac) != "")
+      return string(attackerMac);
+    else return "Failed to retrieve MAC Address";
+}
+
+void MainProcess::setup(char *ptr){
     //setting up device
     char *dev = ptr, errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle;
@@ -80,21 +96,7 @@ void Ids::setup(char *ptr){
     pcap_loop(handle, -1, this->process_packet, NULL);
 }
 
-unsigned int Ids::freqUp(){
-    test = intVal;
-    intVal = 0;
-    if(packet_max < test)
-      packet_max = test;
-    if(test > 100){
-        attackCount ++;
-        alertCount ++;
-    }
-    //cout << "Maximum interval : " << packet_max << endl;
-    cout << "TCP : " << tcp << " UDP : " << udp << " ICMP : " << icmp << " IGMP : " << igmp << " SSH: " << ssh << " FTP: " << ftp << " HTTP : " << http << " HTTPS : " << https << " DNS : " << dns << " DHCP : " << dhcp << " Others : " << others << " Total : " << total << endl;
-    return test;
-}
-
-void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *buffer){
+void MainProcess::process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *buffer){
     int size = header->len;
     //Get the IP Header part of this packet , excluding the ethernet header
     struct iphdr *iph = (struct iphdr*)(buffer + sizeof(struct ethhdr));
@@ -127,29 +129,26 @@ void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u
             ++others;
             break;
     }
-    //cout << "PCAP: TCP:" << tcp << " UDP:" << udp << " ICMP:" << icmp << " IGMP:" << igmp << " Others:" << others << " Total:" << total << "\r";
 }
 
-void Ids::ext_Tcp(const u_char * Buffer, int Size){
+void MainProcess::ext_Tcp(const u_char * Buffer, int Size){
     struct ethhdr *eth = (struct ethhdr *)Buffer;
     unsigned short iphdrlen;
     struct iphdr *iph = (struct iphdr *)( Buffer  + sizeof(struct ethhdr) );
     iphdrlen = iph->ihl*4;
     struct tcphdr *tcph=(struct tcphdr*)(Buffer + iphdrlen + sizeof(struct ethhdr));
     int header_size =  sizeof(struct ethhdr) + iphdrlen + tcph->doff*4;
-    //tcpData tcpd;
     unsigned int dport = ntohs(tcph->dest);
     unsigned int sport = ntohs(tcph->source);
     memset(&dest, 0, sizeof(dest));
     dest.sin_addr.s_addr = iph->daddr;
     memset(&source, 0, sizeof(source));
     source.sin_addr.s_addr = iph->saddr;
-    //string tmpAddr = inet_ntoa(dest.sin_addr);
-    if(test > 100){
+    if(currentCnt > 300){
       switch(dport){
-          case 80: dosIp = inet_ntoa(source.sin_addr); dosPort = 80; sprintf(dosMac, "%.2X-%.2X-%.2X-%.2X-%.2X-%.2X", eth->h_source[0] , eth->h_source[1] , eth->h_source[2] , eth->h_source[3] , eth->h_source[4] , eth->h_source[5]); break;
-          case 443: dosIp = inet_ntoa(source.sin_addr); dosPort = 443; sprintf(dosMac, "%.2X-%.2X-%.2X-%.2X-%.2X-%.2X", eth->h_source[0] , eth->h_source[1] , eth->h_source[2] , eth->h_source[3] , eth->h_source[4] , eth->h_source[5]); break;
-          case 53: dosIp = inet_ntoa(source.sin_addr); dosPort = 53; sprintf(dosMac, "%.2X-%.2X-%.2X-%.2X-%.2X-%.2X", eth->h_source[0] , eth->h_source[1] , eth->h_source[2] , eth->h_source[3] , eth->h_source[4] , eth->h_source[5]); break;
+          case 80: attackerIp = inet_ntoa(source.sin_addr); attackerPort = 80; sprintf(attackerMac, "%.2X-%.2X-%.2X-%.2X-%.2X-%.2X", eth->h_source[0] , eth->h_source[1] , eth->h_source[2] , eth->h_source[3] , eth->h_source[4] , eth->h_source[5]); break;
+          case 443: attackerIp = inet_ntoa(source.sin_addr); attackerPort = 443; sprintf(attackerMac, "%.2X-%.2X-%.2X-%.2X-%.2X-%.2X", eth->h_source[0] , eth->h_source[1] , eth->h_source[2] , eth->h_source[3] , eth->h_source[4] , eth->h_source[5]); break;
+          case 53: attackerIp = inet_ntoa(source.sin_addr); attackerPort = 53; sprintf(attackerMac, "%.2X-%.2X-%.2X-%.2X-%.2X-%.2X", eth->h_source[0] , eth->h_source[1] , eth->h_source[2] , eth->h_source[3] , eth->h_source[4] , eth->h_source[5]); break;
       }
     }
     if(tcph->syn == 1){
@@ -176,50 +175,9 @@ void Ids::ext_Tcp(const u_char * Buffer, int Size){
             default: break;
         }
     }
-
-    // tcpd.sport = ntohs(tcph->source);
-    // tcpd.dport = ntohs(tcph->dest);
-    // tcpd.seq_num = ntohl(tcph->seq);
-    // tcpd.ack_num = ntohl(tcph->ack_seq);
-    // tcpd.hdr_length = (unsigned int)tcph->doff * 4;
-    // tcpd.urgent_flag = (unsigned int)tcph->urg;
-    // tcpd.ack_flag = (unsigned int)tcph->ack;
-
-    // fprintf(logfile , "\n");
-    // fprintf(logfile , "TCP Header\n");
-    // fprintf(logfile , "   |-Source Port      : %u\n",ntohs(tcph->source));
-    // fprintf(logfile , "   |-Destination Port : %u\n",ntohs(tcph->dest));
-    // fprintf(logfile , "   |-Sequence Number    : %u\n",ntohl(tcph->seq));
-    // fprintf(logfile , "   |-Acknowledge Number : %u\n",ntohl(tcph->ack_seq));
-    // fprintf(logfile , "   |-Header Length      : %d DWORDS or %d BYTES\n" ,(unsigned int)tcph->doff,(unsigned int)tcph->doff*4);
-    // //fprintf(logfile , "   |-CWR Flag : %d\n",(unsigned int)tcph->cwr);
-    // //fprintf(logfile , "   |-ECN Flag : %d\n",(unsigned int)tcph->ece);
-    // fprintf(logfile , "   |-Urgent Flag          : %d\n",(unsigned int)tcph->urg);
-    // fprintf(logfile , "   |-Acknowledgement Flag : %d\n",(unsigned int)tcph->ack);
-    // fprintf(logfile , "   |-Push Flag            : %d\n",(unsigned int)tcph->psh);
-    // fprintf(logfile , "   |-Reset Flag           : %d\n",(unsigned int)tcph->rst);
-    // fprintf(logfile , "   |-Synchronise Flag     : %d\n",(unsigned int)tcph->syn);
-    // fprintf(logfile , "   |-Finish Flag          : %d\n",(unsigned int)tcph->fin);
-    // fprintf(logfile , "   |-Window         : %d\n",ntohs(tcph->window));
-    // fprintf(logfile , "   |-Checksum       : %d\n",ntohs(tcph->check));
-    // fprintf(logfile , "   |-Urgent Pointer : %d\n",tcph->urg_ptr);
-    // fprintf(logfile , "\n");
-    // fprintf(logfile , "                        DATA Dump                         ");
-    // fprintf(logfile , "\n");
-    //
-    // fprintf(logfile , "IP Header\n");
-    // PrintData(Buffer,iphdrlen);
-    //
-    // fprintf(logfile , "TCP Header\n");
-    // PrintData(Buffer+iphdrlen,tcph->doff*4);
-    //
-    // fprintf(logfile , "Data Payload\n");
-    // PrintData(Buffer + header_size , Size - header_size );
-    //
-    // fprintf(logfile , "\n###########################################################");
 }
 
-void Ids::ext_Udp(const u_char *Buffer, int Size){
+void MainProcess::ext_Udp(const u_char *Buffer, int Size){
     unsigned short iphdrlen;
 
     struct iphdr *iph = (struct iphdr *)(Buffer +  sizeof(struct ethhdr));
@@ -232,25 +190,7 @@ void Ids::ext_Udp(const u_char *Buffer, int Size){
     unsigned int dport = ntohs(udph->dest);
     unsigned int sport = ntohs(udph->source);
 
-    // memset(&dest, 0, sizeof(dest));
-    // dest.sin_addr.s_addr = iph->daddr;
-    // string tmpAddr = inet_ntoa(dest.sin_addr);
-
     switch(dport){
         case 53: ++dns; break;
     }
-
-    // fprintf(logfile , "\n\n***********************UDP Packet*************************\n");
-    // fprintf(logfile , "\nUDP Header\n");
-    // fprintf(logfile , "   |-Source Port      : %d\n" , ntohs(udph->source));
-    // fprintf(logfile , "   |-Destination Port : %d\n" , ntohs(udph->dest));
-    // fprintf(logfile , "   |-UDP Length       : %d\n" , ntohs(udph->len));
-    // fprintf(logfile , "   |-UDP Checksum     : %d\n" , ntohs(udph->check));
-    // fprintf(logfile , "\n");
-    // fprintf(logfile , "IP Header\n");
-    // fprintf(logfile , "UDP Header\n");
-    // fprintf(logfile , "Data Payload\n");
-}
-
-Ids::~Ids(){
 }

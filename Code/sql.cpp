@@ -16,68 +16,53 @@ sql::Connection *con;
 sql::Statement *stmt;
 sql::ResultSet *res;
 sql::PreparedStatement *pstmt;
+bool state=false;
 
-const char *dbUser, *dbHost, *dbBase, *dbPass;
-bool state = false;
-
-Sql::Sql(){
-    cout << "Connecting to SQL database" << endl;
-    dbUser = this->dbUser;
-    dbHost = this->dbHost;
-    dbPass = this->dbPass;
-    dbBase = this->dbBase;
+Database::Database(){
+    cout << "SQL" << endl;
 }
 
-bool Sql::connect(){
-  try{
-    driver = ::get_driver_instance();
-    con = driver->connect(dbHost, dbUser, dbPass);
-    con->setSchema(dbBase);
-    /*stmt = con->createStatement();
-    stmt->execute("INSERT INTO summaryTable(TCP,UDP,Others,Total,ICMP,IGMP) VALUES(0,0,0,0,0,0)");
-    */
-    //sessionId ++;
-    //delete stmt;
-    if (!con->isValid()){
-      cout << "ERROR(WARNING)!:MySQL Connection failed" << endl;
-      state = false;
-    }
-    else {
-      cout << "MySQL Connection Success" << endl;
-      state = true;
-    }
-  }
-  catch(sql::SQLException &e){
-    cout << "# ERR: SQLException in " << __FILE__;
-    cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
-    cout << "# ERR: " << e.what();
-    cout << " (MySQL error code: " << e.getErrorCode();
-    cout << ", SQLState: " << e.getSQLState() << " )" << endl;
-  }
-  return state;
+Database::~Database(){
+    cout << "~SQL" << endl;
 }
 
-void Sql::insertData(std::string ip, std::string mac, unsigned int port){
-    // string query = "INSERT INTO dosLog(IP_Address, MAC_Address, Port)VALUES('";
-    // query += ip + "','";
-    // query += mac + "',";
-    // query += port + ")";
+bool Database::connect(){
+    try{
+      driver = ::get_driver_instance();
+      con = driver->connect(this->dbHost, this->dbUser, this->dbPass);
+      con->setSchema(this->dbBase);
+      if (!con->isValid()){
+        cout << "ERROR(WARNING)!:MySQL Connection failed" << endl;
+        state = false;
+      }
+      else {
+        cout << "MySQL Connection Success" << endl;
+        state = true;
+      }
+    }
+    catch(sql::SQLException &e){
+      cout << "# ERR: SQLException in " << __FILE__;
+      cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
+      cout << "# ERR: " << e.what();
+      cout << " (MySQL error code: " << e.getErrorCode();
+      cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+    }
+}
+
+void Database::checkTable(){
+    pstmt = con->prepareStatement("CREATE TABLE IF NOT EXISTS dosLog(ID int not null auto_increment primary key, IP_Address varchar(320) not null, MAC_Address varchar(500) not null, Port int not null, Time TIMESTAMP default current_timestamp)");
+    pstmt->execute();
+    delete pstmt;
+}
+
+void Database::insert(){
+    string ip = MainProcess::getIp();
+    string mac = MainProcess::getMac();
+    unsigned int port = MainProcess::getPort();
     pstmt = con->prepareStatement("INSERT INTO dosLog(IP_Address,MAC_Address,Port) VALUES(?,?,?)");
     pstmt->setString(1,ip);
     pstmt->setString(2,mac);
     pstmt->setInt(3,port);
     pstmt->execute();
     delete pstmt;
-}
-
-void Sql::addData(){
-    //cout << "Data added" << this->dbUser << endl;
-}
-
-void Sql::selectData(){
-    //cout << "Select * from data" << this->dbUser << endl;
-}
-
-Sql::~Sql(){
-    //cout << "Exiting" << endl;
 }

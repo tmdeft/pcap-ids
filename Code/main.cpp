@@ -1,109 +1,82 @@
 #include "ids.h"
 #include <pthread.h>
-#include <string>
 
 using namespace std;
+bool dbState = false;
 
-void *mainProcess(void *arg){
-    char *device;
-    device = (char *)arg;
-    Ids ids;
-    ids.setup(device);
-}
-
-void *sqlProcess(void *){
-    Sql sql;
-    bool state;
-    state = sql.connect();
-    if (state == false){
-      sql.connect();
-    }
+void *mainProcess(void* ptr){
+    char *dev;
+    dev = (char *)ptr;
+    MainProcess mp;
+    mp.setup(dev);
 }
 
 void *socketProcess(void *){
-    Socket socket;
-    socket.getData();
-    socket.startSock();
+    SocketData sd;
+    sd.setSocket();
 }
 
-void *intervalProcess(void *){
-    Ids ids;
-    Sql sql;
+void *sqlProcess(void *){
+    Database db;
+    dbState = db.connect();
+    if (dbState == false)
+      dbState = db.connect();
+}
+
+void *updateProcess(void *){
+    string ipAddress;
     unsigned int port = 0;
-    string ipAddress = "";
-    string macAddress = "";
-    string currentAttacker = "";
-    unsigned int cnt = 0;
+    string macAddress;
+    MainProcess mp;
+    Database db;
     while(1){
-      sleep(1);
-      if(ids.freqUp() > 200){
-          port = ids.getPort();
-          ipAddress = ids.getIp();
-          macAddress = ids.getMac();
-          cout << "before if : " << ipAddress << endl;
-          if(ipAddress != "Not yet"){
-            if (cnt == 0){
-                cout << "test ip : " << ipAddress << endl;
-                currentAttacker = ipAddress;
-                //strcpy(currentAttacker, testpointer);
-                cnt ++;
-                cout << "cnt=0 IP : " << currentAttacker << endl;
-                sql.insertData(ipAddress, macAddress, port);
-            }
-            else if (cnt > 0){
-                if(currentAttacker == ipAddress){
-                    cout << "Same attacker with : " << currentAttacker << endl;
-                }
-                else {
-                    sql.insertData(ipAddress, macAddress, port);
-                    cout << "New attacker with : " << ipAddress << endl;
-                    cout << "Current attacker with : " << currentAttacker << endl;
-                }
-                cnt ++;
-            }
-          }
-      }
+        sleep(1);
+        if(mp.freqUp() > 300){
+            db.insert();
+            mp.setCounter();
+        }
     }
 }
 
 int main(int argc, char *argv[]){
-    //checking arguments
-    if (argc < 2){
-      cout << "Missing argument" << endl;
-      cout << "Usage : interface" << endl;
-      exit(1);
+    if(argc < 2){
+        cout << "Missing argument!\nUsage: <interface>" << endl;
+        exit(EXIT_FAILURE);
     }
-    else if (argc > 2) {
-      cout << "Too many argument given" << endl;
-      cout << "This might cause program fail. Exiting..." << endl;
-      exit(1);
+    else if (argc > 2){
+        cout << "Too many arguments given...\nExiting..." << endl;
+        exit(EXIT_FAILURE);
     }
-    //Creating threads
-    pthread_t loopThread, sqlThread, sockThread, intervalThread;
-    const char *dev = argv[1];
-    int loop, sql, sock, interval;
-    loop = pthread_create(&loopThread, NULL, mainProcess, (void *)dev);
-    if (loop){
-      cout << "Error unable to create thread : " << loop << endl;
-      exit(1);
+    const char *interface = argv[1];
+    //Creating threads;
+    pthread_t mainThread, socketThread, sqlThread, updateThread;
+    int mt, sockt, sqlt, upt;
+    mt = pthread_create(&mainThread, NULL, mainProcess, (void *)interface);
+    if(mt){
+        cout << "Error - creating main thread, return code : " << mt << endl;
+        exit(EXIT_FAILURE);
     }
-    sql = pthread_create(&sqlThread, NULL, sqlProcess, NULL);
-    if (sql){
-      cout << "Error unable to create thread : " << sql << endl;
-      exit(1);
+    sockt = pthread_create(&socketThread, NULL, socketProcess, NULL);
+    if(sockt){
+        cout << "Error - creating socket thread, return code : " << sockt << endl;
+        exit(EXIT_FAILURE);
     }
-    sock = pthread_create(&sockThread, NULL, socketProcess, NULL);
-    if (sock){
-      cout << "Error unable to create thread : " << sock << endl;
-      exit(1);
+    sqlt = pthread_create(&sqlThread, NULL, sqlProcess, NULL);
+    if(sqlt){
+        cout << "Error - creating sql thread, return code : " << sqlt << endl;
+        exit(EXIT_FAILURE);
     }
-    interval = pthread_create(&intervalThread, NULL, intervalProcess, NULL);
-    if (interval){
-      cout << "Error unable to create thread :" << interval << endl;
-      exit(1);
+    upt = pthread_create(&updateThread, NULL, updateProcess, NULL);
+    if(upt){
+        cout << "Error - creating update thread, return code : " << upt << endl;
+        exit(EXIT_FAILURE);
     }
-    pthread_join(loopThread, NULL);
+    pthread_join(mainThread, NULL);
+    pthread_join(socketThread, NULL);
     pthread_join(sqlThread, NULL);
-    pthread_join(sockThread, NULL);
-    pthread_join(intervalThread, NULL);
+    while(1){
+        sleep(1);
+        cout << "Testing" << endl;
+    }
+    return 0;
 }
