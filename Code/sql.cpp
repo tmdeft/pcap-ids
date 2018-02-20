@@ -47,6 +47,7 @@ bool Database::connect(){
       cout << " (MySQL error code: " << e.getErrorCode();
       cout << ", SQLState: " << e.getSQLState() << " )" << endl;
     }
+    checkTable();
 }
 
 void Database::checkTable(){
