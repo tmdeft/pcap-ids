@@ -29,7 +29,7 @@ std::string Ids::setProtocol(){
     result += to_string(dns) + ",";
     result += machineAddr + ",";
     result += ifname + ",";
-    result += to_string(alertCount) + ",";
+    result += to_string(attackCount) + ",";
     result += to_string(attackCount) + ",";
     result += dosIp;
     alertCount = 0;
@@ -81,13 +81,14 @@ unsigned int Ids::freqUp(){
     intVal = 0;
     if(packet_max < test)
       packet_max = test;
-    if(test > 100){
-        attackCount ++;
-        alertCount ++;
-    }
     //cout << "Maximum interval : " << packet_max << endl;
     cout << "TCP : " << tcp << " UDP : " << udp << " ICMP : " << icmp << " IGMP : " << igmp << " SSH: " << ssh << " FTP: " << ftp << " HTTP : " << http << " HTTPS : " << https << " DNS : " << dns << " DHCP : " << dhcp << " Others : " << others << " Total : " << total << endl;
     return test;
+}
+
+void Ids::countAttack(std::string ip){
+    attackCount ++;
+    dosIp = ip;
 }
 
 void Ids::process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *buffer){

@@ -41,6 +41,7 @@ class Ids{
     std::string getMac();
     void setup(char *);
     std::string setProtocol();
+    void countAttack(std::string);
     static void process_packet(u_char *, const struct pcap_pkthdr *, const u_char *);
     static void ext_Tcp(const u_char *, int);
     static void ext_Udp(const u_char *, int);
