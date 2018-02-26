@@ -13,6 +13,8 @@ char attackerMac[200];
 unsigned int attackerPort = 0;
 unsigned int total, icmp, igmp, tcp, udp, intVal, others, currentCnt, attackCount = 0;
 unsigned int dns, dhcp, ftp, http, https, ssh, packet_max = 0;
+unsigned int portArr[5] = {0,0,0,0,0};
+unsigned int arrCnt [5] = {0,0,0,0,0};
 struct sockaddr_in dest,source;
 
 MainProcess::MainProcess(){
@@ -51,6 +53,11 @@ unsigned int MainProcess::freqUp(){
     if(packet_max < currentCnt)
         packet_max = currentCnt;
     cout << "Total : " << total << "\nInterval : " << currentCnt << endl;
+    cout << "PORT ARRAY :" << endl;
+    for (int i=0; i < 5; i++){
+        cout << "[" << portArr[i] << "]";
+    }
+    cout << endl;
     return currentCnt;
 }
 
@@ -153,9 +160,27 @@ void MainProcess::ext_Tcp(const u_char * Buffer, int Size){
     }
     if(tcph->syn == 1){
         switch(dport){
-            case 80: ++http; break;
-            case 443: ++https; break;
-            case 53: ++dns; break;
+            case 80: ++http; for(int i=0; i < 5; i++){
+                if(portArr[i] == 80)
+                    arrCnt[i] ++;
+                else {
+                    portArr[i] = 80;
+                }
+            };break;
+            case 443: ++https; for(int i=0; i < 5; i++){
+                if(portArr[i] == 443)
+                    arrCnt[i] ++;
+                else {
+                    portArr[i] = 443;
+                }
+            };break;
+            case 53: ++dns; for(int i=0; i < 5; i++){
+                if(portArr[i] == 53)
+                    arrCnt[i] ++;
+                else {
+                    portArr[i] = 53;
+                }
+            };break;
             case 67: ++dhcp; break;
             case 22: ++ssh; break;
             case 20: ++ftp; break;
@@ -175,6 +200,7 @@ void MainProcess::ext_Tcp(const u_char * Buffer, int Size){
             default: break;
         }
     }
+
 }
 
 void MainProcess::ext_Udp(const u_char *Buffer, int Size){
