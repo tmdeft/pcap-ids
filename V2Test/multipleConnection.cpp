@@ -23,6 +23,7 @@ SocketData::~SocketData(){
 std::string SocketData::getData(){
     string result;
     result = mp.getSocketData();
+    cout << "TEST:" << result << endl;
     return result;
 }
 
@@ -34,6 +35,18 @@ std::string SocketData::getPortData(){
     res += "," + to_string(*(portResult + 1));
     res += "," + to_string(*(portResult + 2));
     cout << "RES:" << res << endl;
+    return res;
+}
+
+std::string SocketData::getSizeData(){
+    unsigned int *sizeResult;
+    sizeResult = mp.getSizeArr();
+    string res = "";
+    res += to_string(*(sizeResult + 0));
+    res += "," + to_string(*(sizeResult + 1));
+    res += "," + to_string(*(sizeResult + 2));
+    res += "," + to_string(*(sizeResult + 3));
+    res += "," + to_string(*(sizeResult + 4));
     return res;
 }
 
@@ -199,6 +212,9 @@ void SocketData::setSocket(){
                   if (buffer == to_string(1)){
                       cout << getPortData().data() << endl;
                       send(sd, getPortData().data(), getPortData().size(), 0);
+                  }
+                  else if (buffer == to_string(2)){
+                      send(sd, getSizeData().data(), getSizeData().size(), 0);
                   }
                   else {
                       send(sd , getData().data() , getData().size() , 0 );

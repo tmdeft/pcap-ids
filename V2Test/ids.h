@@ -36,6 +36,7 @@ class MainProcess {
         void setCounter();
         std::string getSocketData();
         unsigned int * getPortArr();
+        unsigned int * getSizeArr();
 };
 
 class Database : public  MainProcess{
@@ -59,6 +60,7 @@ class SocketData : public MainProcess{
         void setSocket();
         std::string getData();
         std::string getPortData();
+        std::string getSizeData();
 };
 
 

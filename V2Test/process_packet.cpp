@@ -15,12 +15,17 @@ unsigned int total, icmp, igmp, tcp, udp, intVal, others, currentCnt, attackCoun
 unsigned int dns, dhcp, ftp, http, https, ssh, packet_max = 0;
 unsigned int portArr[5] = {0,0,0,0,0}; //[0]=80,[1]=443,[2]=53
 unsigned int arrCnt [5] = {0,0,0,0,0};
+unsigned int sizeArr[5] = {0,0,0,0,0}; //[0]=1500+, [1]=1500-1024, [2]=1024-866, [3]=866-512, [4]=512-
 struct sockaddr_in dest,source;
 
 MainProcess::MainProcess(){
 }
 
 MainProcess::~MainProcess(){
+}
+
+unsigned int * MainProcess::getSizeArr(){
+    return sizeArr;
 }
 
 unsigned int * MainProcess::getPortArr(){
@@ -32,8 +37,7 @@ unsigned int * MainProcess::getPortArr(){
 
 std::string MainProcess::getSocketData(){
     string result;
-    unsigned int freqTest = freqUp();
-    result = to_string(freqTest) + ",";
+    result = to_string(currentCnt) + ",";
     result += to_string(packet_max) + ",";
     result += to_string(http) + ",";
     result += to_string(https) + ",";
@@ -59,12 +63,11 @@ unsigned int MainProcess::freqUp(){
     intVal = 0;
     if(packet_max < currentCnt)
         packet_max = currentCnt;
-    //cout << "Total : " << total << "\nInterval : " << currentCnt << endl;
+    cout << "Total : " << total << "\nInterval : " << currentCnt << endl;
     // cout << "PORT ARRAY :" << endl;
     // for (int i=0; i < 5; i++){
     //     cout << "[" << portArr[i] << "]";
     // }
-    cout << endl;
     return currentCnt;
 }
 
@@ -112,6 +115,16 @@ void MainProcess::setup(char *ptr){
 
 void MainProcess::process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *buffer){
     int size = header->len;
+    if (size > 1500)
+        sizeArr[0] += 1;
+    else if (1500 > size && size > 750)
+        sizeArr[1] += 1;
+    else if (750 > size && size > 512)
+        sizeArr[2] += 1;
+    else if (512 > size && size > 97)
+        sizeArr[3] += 1;
+    else if (size < 97)
+        sizeArr[4] += 1;
     //Get the IP Header part of this packet , excluding the ethernet header
     struct iphdr *iph = (struct iphdr*)(buffer + sizeof(struct ethhdr));
     ++total;
