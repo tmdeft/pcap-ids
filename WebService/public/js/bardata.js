@@ -1,5 +1,5 @@
 $(function(){
-  Morris.Bar({
+  var sizeChart = Morris.Bar({
           element: 'size-bar-chart',
           data: [{
               y: '2006',
@@ -73,4 +73,24 @@ $(function(){
               hideHover: 'auto',
               resize: true
           });
+
+          function test(newData){
+              sizeChart.setData(newData);
+              sizeChart.redraw();
+          };
+          function jsonData(){
+            $.ajax({
+                url:"/getBardata.php",
+                type: "get",
+                dataType: "json",
+                success:function(response){
+                  test(response)
+                }
+            });
+          }
+
+        setInterval(function updateChart(){
+            jsonData();
+            //test($.parseJSON('[{"y":"2015", "a":10, "b":10}, {"y":"2016", "a":10, "b":10}, {"y":"2017", "a":10, "b":10}]'));
+        },1000);
 });

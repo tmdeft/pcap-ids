@@ -35,6 +35,7 @@ class MainProcess {
         unsigned int freqUp();
         void setCounter();
         std::string getSocketData();
+        unsigned int * getPortArr();
 };
 
 class Database : public  MainProcess{
@@ -57,6 +58,7 @@ class SocketData : public MainProcess{
         ~SocketData();
         void setSocket();
         std::string getData();
+        std::string getPortData();
 };
 
 

@@ -74,9 +74,5 @@ int main(int argc, char *argv[]){
     pthread_join(mainThread, NULL);
     pthread_join(socketThread, NULL);
     pthread_join(sqlThread, NULL);
-    while(1){
-        sleep(1);
-        cout << "Testing" << endl;
-    }
     return 0;
 }
