@@ -27,3 +27,5 @@ Route::get('/doslog',function(){
     $data = DB::table('dosLog')->get();
     return view('doslog', ['data' => $data]);
 });
+
+Route::get('jiras', 'JiraController@index')->name('jiras');
